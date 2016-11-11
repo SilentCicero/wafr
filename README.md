@@ -54,7 +54,8 @@ wafr /contracts/tests/
 node ./node_modules/wafr/bin/wafr.js /contracts/tests/
 ```
 
-``` // found in: ./example/test.example.sol
+```
+// found in: ./example/test.example.sol
 pragma solidity ^0.4.4;
 
 import "wafr/Test.sol";
