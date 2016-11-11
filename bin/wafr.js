@@ -7,11 +7,13 @@ const wafr = require('../src/index.js');
 // handle cli
 const cli = meow(`
     Usage
-      $ wafr <path to contract tests>
+      $ wafr <path to contract test> [--root ./]
 `);
 
+const rootPath = cli.flags.root;
+
 // the main wafr code to run
-wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) => {
+wafr({ path: path.resolve(cli.input[0]), optimize: 1, root: rootPath }, (wafrError, wafrResult) => {
   if (wafrError) {
     throw new Error(`error while running wafr CLI: ${wafrError}`);
 

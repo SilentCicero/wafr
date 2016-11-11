@@ -233,7 +233,8 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
 
 // run the main solTest export
 function wafr(options, callback) {
-  const testContractPath = path.resolve('./src/lib/Test.sol');
+  const root = options.root || './node_modules/wafr';
+  const testContractPath = path.resolve(root, './src/lib/Test.sol');
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
   const reportLogs = {

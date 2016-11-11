@@ -7,6 +7,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/assertTrue',
+        root: './',
         optimize: 1,
       }, (err, res) => {
         assert.equal(err, null);
@@ -79,6 +80,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/testThrow',
+        root: './',
         optimize: 1,
       }, (err, res) => {
         assert.equal(err, null);
@@ -95,6 +97,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/boardroom',
+        root: './',
         optimize: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
@@ -110,6 +113,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/setupMethod',
+        root: './',
         optimize: 1,
       }, (err, res) => {
         assert.equal(err, null);
