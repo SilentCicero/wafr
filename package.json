@@ -1,0 +1,134 @@
+{
+  "name": "wafr",
+  "version": "0.1.0",
+  "description": "A super simple test harness for Solidity smart-contracts.",
+  "scripts": {
+    "start": "npm test",
+    "npmcheckversion": "node ./internals/scripts/npmcheckversion.js",
+    "nodejscheckversion": "node ./internals/scripts/nodejscheckversion.js",
+    "test": "mocha src/tests/**/*.js -R spec --timeout 200000",
+    "example": "node ./bin/wafr.js ./example/",
+    "release": "npmpub",
+    "pretest": "npm run lint",
+    "lint": "npm run lint:js",
+    "lint:eslint": "eslint --ignore-path .gitignore",
+    "lint:js": "npm run lint:eslint -- . ",
+    "lint:staged": "lint-staged",
+    "coveralls": "cat ./coverage/lcov/lcov.info | coveralls"
+  },
+  "bin": {
+    "wafr": "./bin/wafr.js"
+  },
+  "authors": [
+    "Nick Dodson <nick.dodson@consensys.net>"
+  ],
+  "engines": {
+    "npm": ">=3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SilentCicero/wafr.git"
+  },
+  "main": "src/index.js",
+  "files": [
+    "scripts",
+    "bin",
+    "assets",
+    "src",
+    "docs",
+    "!**/src/tests"
+  ],
+  "keywords": [
+    "ethereum",
+    "solidity",
+    "test",
+    "unit",
+    "smart-contract",
+    "wafr"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "1.1.3",
+    "ethereumjs-testrpc": "3.0.1",
+    "node-dir": "0.1.16",
+    "solc": "0.4.4",
+    "web3": "0.16.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "child_process": "1.0.2",
+    "coveralls": "2.11.9",
+    "cross-env": "1.0.7",
+    "eslint": "2.10.1",
+    "eslint-config-airbnb": "9.0.1",
+    "eslint-import-resolver-webpack": "0.2.4",
+    "eslint-plugin-import": "1.8.0",
+    "eslint-plugin-jsx-a11y": "1.2.0",
+    "eslint-plugin-react": "5.1.1",
+    "eventsource-polyfill": "0.9.6",
+    "lint-staged": "1.0.1",
+    "meow": "3.7.0",
+    "mocha": "2.4.5",
+    "path": "0.12.7",
+    "pre-commit": "1.1.3",
+    "prompt": "1.0.0",
+    "replace": "*",
+    "rimraf": "2.5.2",
+    "sinon": "2.0.0-pre"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      [
+        "module-resolver",
+        {
+          "root": [
+            "./src"
+          ]
+        }
+      ]
+    ]
+  },
+  "lint-staged": {
+    "lint:eslint": "*.js"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "airbnb",
+    "env": {
+      "node": true,
+      "mocha": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "import/no-unresolved": 2,
+      "comma-dangle": [
+        2,
+        "always-multiline"
+      ],
+      "indent": [
+        2,
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "no-console": 1,
+      "max-len": 0,
+      "prefer-template": 2,
+      "no-use-before-define": 0,
+      "newline-per-chained-call": 0,
+      "arrow-body-style": [
+        2,
+        "as-needed"
+      ]
+    }
+  },
+  "pre-commit": "lint:staged"
+}
