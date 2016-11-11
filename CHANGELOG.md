@@ -1,3 +1,8 @@
+# 0.1.4 -- Fix dependancies, readme update
+
+1. Fix `package.json` dependancies
+2. Update readme usage example
+
 # 0.1.3 -- Remove Test.sol loading/resolving
 
 1. Remove `root` CLI option

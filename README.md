@@ -47,11 +47,11 @@ npm install -g wafr
 ## Usage
 
 ```
-wafr /contracts/tests/
+wafr ./example
 
 // or locally
 
-node ./node_modules/wafr/bin/wafr.js /contracts/tests/
+node ./node_modules/wafr/bin/wafr.js ./example
 ```
 
 ```
@@ -132,7 +132,7 @@ We communicate via [issues](https://github.com/SilentCicero/wafr/issues) and [pu
 
 ## Licence
 
-This project is licensed under the MIT license, Copyright (c) 2016 SilentCicero. For more information see LICENSE.md.
+This project is licensed under the MIT license, Copyright (c) 2016 Nick Dodson. For more information see LICENSE.md.
 
 ```
 The MIT License
