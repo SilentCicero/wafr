@@ -1,10 +1,9 @@
 const Web3 = require('web3');
 const TestRPC = require('ethereumjs-testrpc');
-const fs = require('fs');
 const solc = require('solc');
 const utils = require('./utils/index.js');
 const chalk = require('chalk');
-const path = require('path');
+const testContract = require('./lib/Test.sol.js');
 const throwError = utils.throwError;
 const symbols = utils.symbols;
 const log = utils.log;
@@ -233,8 +232,6 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
 
 // run the main solTest export
 function wafr(options, callback) {
-  const root = options.root || './node_modules/wafr';
-  const testContractPath = path.resolve(root, './src/lib/Test.sol');
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
   const reportLogs = {
@@ -244,76 +241,67 @@ function wafr(options, callback) {
     logs: {},
   };
 
-  console.log(testContractPath); // eslint-disable-line
-
-  // get Test.sol contract
-  fs.readFile(testContractPath, 'utf8', (testFileError, testFile) => {
-    if (testFileError) {
-      throwError(`Error while loading the Test.sol file: ${testFileError}`);
+  // get allinput sources
+  getInputSources(contractsPath, (inputError, sources) => {
+    if (inputError) {
+      throwError(`while getting input sources: ${inputError}`);
     }
 
-    // get allinput sources
-    getInputSources(contractsPath, (inputError, sources) => {
-      if (inputError) {
-        throwError(`while getting input sources: ${inputError}`);
-      }
+    // build contract sources input for compiler
+    const compilerInput = {
+      sources: Object.assign({ 'wafr/Test.sol': testContract }, sources),
+    };
 
-      // build contract sources input for compiler
-      const compilerInput = {
-        sources: Object.assign({ 'wafr/Test.sol': testFile }, sources),
+    // compiling contracts
+    log('compiling contracts from sources...');
+
+    // compile solc output (sync method)
+    const output = solc.compile(compilerInput, optimizeCompiler);
+
+    // handle all compiling errors
+    if (output.errors) {
+      output.errors.forEach((outputError) => {
+        throwError(`while compiling contracts: ${outputError}`);
+      });
+    } else {
+      // compiling contracts
+      log('contracts compiled!');
+
+      // find and build test contracts array
+      const testContracts = buildTestContractsArray(output.contracts);
+      const startIndex = 0;
+
+      // done function
+      const contractComplete = (contractReport) => {
+        // if contract failed, then all tests fail
+        if (contractReport !== false) {
+          if (contractReport.status === 'failure') {
+            reportLogs.status = 'failure';
+            reportLogs.failure += contractReport.failure;
+          } else {
+            reportLogs.success += contractReport.success;
+          }
+        }
+
+        // if contract report is false, there is no more contracts to test
+        if (contractReport === false) {
+          // report done in log
+          report(`
+
+${chalk.red(`${reportLogs.failure} not passing`)}
+${chalk.green(`${reportLogs.success} passing`)}
+`);
+
+          // fire callback
+          callback(null, reportLogs);
+        } else {
+          reportLogs.logs[contractReport.name] = contractReport;
+        }
       };
 
-      // compiling contracts
-      log('compiling contracts from sources...');
-
-      // compile solc output (sync method)
-      const output = solc.compile(compilerInput, optimizeCompiler);
-
-      // handle all compiling errors
-      if (output.errors) {
-        output.errors.forEach((outputError) => {
-          throwError(`while compiling contracts: ${outputError}`);
-        });
-      } else {
-        // compiling contracts
-        log('contracts compiled!');
-
-        // find and build test contracts array
-        const testContracts = buildTestContractsArray(output.contracts);
-        const startIndex = 0;
-
-        // done function
-        const contractComplete = (contractReport) => {
-          // if contract failed, then all tests fail
-          if (contractReport !== false) {
-            if (contractReport.status === 'failure') {
-              reportLogs.status = 'failure';
-              reportLogs.failure += contractReport.failure;
-            } else {
-              reportLogs.success += contractReport.success;
-            }
-          }
-
-          // if contract report is false, there is no more contracts to test
-          if (contractReport === false) {
-            // report done in log
-            report(`
-
-  ${chalk.red(`${reportLogs.failure} not passing`)}
-  ${chalk.green(`${reportLogs.success} passing`)}
-  `);
-
-            // fire callback
-            callback(null, reportLogs);
-          } else {
-            reportLogs.logs[contractReport.name] = contractReport;
-          }
-        };
-
-        // test each contract sequentially
-        testContractsSeq(startIndex, testContracts, contractComplete);
-      }
-    });
+      // test each contract sequentially
+      testContractsSeq(startIndex, testContracts, contractComplete);
+    }
   });
 }
 

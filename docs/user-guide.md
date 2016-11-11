@@ -72,3 +72,25 @@ node ./bin/wafr.js ./example/
   0 not passing
   2 passing
 ```
+
+## Features
+
+### Assertion Methods
+
+ `assertTrue` (bool testValue, string message)
+
+### Unit Tests
+
+Include the term `test` in any method in your test contract to make it a unit test.
+
+### Unit Testing Throw
+
+Include the terms `test` and `throw` anywhere in your method to make the method a throw unit test. The method test will pass if the method `throw`s.
+
+### Setup Method
+
+The `setup` method, if stated in your test contract will be executed first before all the unit test methods. This is where you can configure your Test contracts.
+
+### Fauceting
+
+Every contract that inherits the Test contract is immediatly fauceted ether after contract construction, but before the `setup` method is executed. This allows you to move funds around within the contract by using the `.send` method.

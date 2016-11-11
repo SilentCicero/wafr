@@ -1,3 +1,9 @@
+# 0.1.3 -- Remove Test.sol loading/resolving
+
+1. Remove `root` CLI option
+2. Remove resolve/loading of Test.sol => require('Test.sol.js')
+3. Document additions and cleanup in user-guide
+
 # 0.1.0 -- Scaffolding, Docs, First Commit, Basic Tests
 
 1. Code of Conduct established
