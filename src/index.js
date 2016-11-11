@@ -4,6 +4,7 @@ const fs = require('fs');
 const solc = require('solc');
 const utils = require('./utils/index.js');
 const chalk = require('chalk');
+const path = require('path');
 const throwError = utils.throwError;
 const symbols = utils.symbols;
 const log = utils.log;
@@ -81,15 +82,15 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       methodReport.logs.forEach((methodLog, methodLogIndex) => {
         const message = methodLog.args._message; // eslint-disable-line
 
-        report(chalk.red(`
+        report(`
           -----------------
 
-          assertion failed (assertTrue)
+          ${chalk.red('assertion failed (assertTrue)')}
           index: ${methodLogIndex}
           value (e): true,
           value (a): false,
           message: ${message}
-          `));
+          `);
       });
     } else {
       report(`     ${chalk.green(symbols.ok)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
@@ -232,7 +233,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
 
 // run the main solTest export
 function wafr(options, callback) {
-  const testContractPath = './src/lib/Test.sol';
+  const testContractPath = path.resolve('./src/lib/Test.sol');
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
   const reportLogs = {
