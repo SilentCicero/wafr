@@ -36,7 +36,7 @@
 
 <br />
 
-A super simple Solidity contract testing framework. Compiles and runs test contracts like dapple, but simpler.
+A super simple Solidity contract testing harness.
 
 ## Install
 
@@ -54,9 +54,7 @@ wafr /contracts/tests/
 node ./node_modules/wafr/bin/wafr.js /contracts/tests/
 ```
 
-## example/test.example.sol
-
-```
+``` // found in: ./example/test.example.sol
 pragma solidity ^0.4.4;
 
 import "wafr/Test.sol";
