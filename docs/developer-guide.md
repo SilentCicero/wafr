@@ -156,7 +156,7 @@ contract Test {
 }
 ```
 
-So far this is the test harness. It may change and grow overtime.
+So far this is the test harness. It may change and grow overtime. For now expect this to be the base `Test.sol` harness.
 
 ## Contributing
 
