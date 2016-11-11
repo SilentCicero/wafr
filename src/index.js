@@ -243,8 +243,14 @@ function wafr(options, callback) {
     logs: {},
   };
 
+  console.log(testContractPath); // eslint-disable-line
+
   // get Test.sol contract
   fs.readFile(testContractPath, 'utf8', (testFileError, testFile) => {
+    if (testFileError) {
+      throwError(`Error while loading the Test.sol file: ${testFileError}`);
+    }
+
     // get allinput sources
     getInputSources(contractsPath, (inputError, sources) => {
       if (inputError) {
