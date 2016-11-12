@@ -62,31 +62,36 @@ function getInputSources(dirname, callback) {
       throwError(`while while getting input sources ${filesError}`);
     }
 
-    // read all files
-    dir.readFiles(dirname, (readFilesError, content, filename, next) => {
-      if (readFilesError) {
-        throwError(`while getting input sources ${readFilesError}`);
-      }
+    // if no files in directory, then fire callback with empty sources
+    if (files.length === 0) {
+      callback(null, sources);
+    } else {
+      // read all files
+      dir.readFiles(dirname, (readFilesError, content, filename, next) => {
+        if (readFilesError) {
+          throwError(`while getting input sources ${readFilesError}`);
+        }
 
-      // parsed filename
-      const parsedDirName = dirname.replace('./', '');
-      const parsedFileName = filename.replace(parsedDirName, '').replace(/^\//, '');
+        // parsed filename
+        const parsedDirName = dirname.replace('./', '');
+        const parsedFileName = filename.replace(parsedDirName, '').replace(/^\//, '');
 
-      // add input sources to output
-      if (filename.includes('.sol')) {
-        sources[parsedFileName] = content;
-      }
+        // add input sources to output
+        if (filename.includes('.sol')) {
+          sources[parsedFileName] = content;
+        }
 
-      // increase files readFiles
-      filesRead += 1;
+        // increase files readFiles
+        filesRead += 1;
 
-      // process next file
-      if (filesRead === files.length) {
-        callback(null, sources);
-      } else {
-        next();
-      }
-    });
+        // process next file
+        if (filesRead === files.length) {
+          callback(null, sources);
+        } else {
+          next();
+        }
+      });
+    }
   });
 }
 

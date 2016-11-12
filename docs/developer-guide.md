@@ -158,6 +158,15 @@ contract Test {
 
 So far this is the test harness. It may change and grow overtime. For now expect this to be the base `Test.sol` harness.
 
+## Todo
+
+There are a few todo items for `wafr`, here are a few of them:
+
+1. `LogString` - will log a string
+2. `LogUnit` - will log a single uint
+3. `LogAddress` - will log an address
+4. `LogBool` - will log a bool
+
 ## Contributing
 
 Please help better the ecosystem by submitting issues and pull requests to default. We need all the help we can get to build the absolute best linting standards and utilities. We follow the AirBNB linting standard. Please read more about contributing to `wafr` in the `CONTRIBUTING.md`.

@@ -1,3 +1,11 @@
+# 0.1.5 -- Fix fauceting, setup success, more user-guide docs
+
+1. Fixed fauceting
+2. Fixed setup async waiting
+3. More `user-guide` doc examples
+4. More test coverage (empty test dir, invalid tests, fauceting tests)
+5. Developer guide todo's.
+
 # 0.1.4 -- Fix dependancies, readme update
 
 1. Fix `package.json` dependancies

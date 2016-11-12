@@ -36,7 +36,7 @@
 
 <br />
 
-A super simple Solidity contract testing harness.
+A super simple, wafer thin, Solidity contract testing harness.
 
 ## Install
 

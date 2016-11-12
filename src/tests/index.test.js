@@ -93,6 +93,52 @@ describe('run test ', () => {
       });
     });
 
+    it('should run through empty tests, and skip bad contracts', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/emptyTestContract',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.ValidTest1.logs.test_oneAssert.logs.length, 1);
+        assert.equal(res.logs.ValidTest2.logs.test_oneAssert.logs.length, 1);
+        done();
+      });
+    });
+
+    it('no tests dir', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/noTestDir',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(Object.keys(res.logs).length, 0);
+        done();
+      });
+    });
+
+    it('should run balance faucet tests', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/faucet',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.FaucetTest.name, 'FaucetTest');
+        assert.equal(typeof res.logs.FaucetTest.logs.test_contractBalance, 'object');
+        assert.equal(res.logs.FaucetTest.logs.test_contractBalance.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(typeof res.logs.FaucetTest.logs.test_sendFundsToContract, 'object');
+        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs.length, 2);
+        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._testValue, true); // eslint-disable-line
+        done();
+      });
+    });
+
     it('should run BoardRoom tests', (done) => {
       // run solTest
       wafr({

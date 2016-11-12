@@ -1,6 +1,6 @@
 {
   "name": "wafr",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A super simple test harness for Solidity smart-contracts.",
   "scripts": {
     "start": "npm test",

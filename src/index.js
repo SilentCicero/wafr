@@ -27,6 +27,13 @@ const txObject = { from: accounts[0], gas: 3000000 };
 // test each method sequentially...
 // 1.. then 2... then 3... and so on
 function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContract, nextMethod) {
+  // if contract has no tests, then skip the test contract
+  if (testMethods.length === 0) {
+    // Test contract is complete
+    nextContract();
+    return;
+  }
+
   // the next method index to test
   const nextIndex = currentIndex + 1;
 
@@ -134,6 +141,14 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 // test each contract one after the other
 // test 1.. test 2... and so on
 function testContractsSeq(contractIndex, testContracts, contractComplete) {
+  // check if this contract is defined
+  // if its not defined, then skip this contract
+  if (typeof testContracts[contractIndex] === 'undefined') {
+    contractComplete(false);
+    return;
+  }
+
+  // next index
   const nextIndex = contractIndex + 1;
 
   // setup contract variables
@@ -141,6 +156,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
   const contractABI = JSON.parse(testContracts[contractIndex].interface);
   const contractObject = web3.eth.contract(contractABI);
   const contractBytecode = testContracts[contractIndex].bytecode;
+  const contractBalance = 500000;
   const contractTxObject = Object.assign({ data: contractBytecode },
     Object.assign({}, txObject));
 
@@ -162,8 +178,17 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
   ${contractName}
     `);
 
-  // if contract is a test contract
-  if (contractIsTest(contractABI)) {
+  // if contract is not a test, skip the contract
+  // else start testing the contract
+  if (!contractIsTest(contractABI)) {
+    // if the next contract doesnt exist, complete testing
+    if (typeof testContracts[nextIndex] === 'undefined') {
+      // fire the final done method
+      contractComplete(false);
+    } else {
+      testContractsSeq(nextIndex, testContracts, contractComplete);
+    }
+  } else {
     // deploy a new instantiation of that test
     contractObject.new(contractTxObject, (contractError, contractResult) => {
       // contract error
@@ -176,7 +201,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           const testMethods = getTestMethodsFromABI(contractABI);
           const startIndex = 0;
           const initialTxObject = Object.assign({}, txObject);
-          initialTxObject.value = 500000;
+          initialTxObject.value = contractBalance;
           initialTxObject.to = contractResultObject.address;
           const setupTxObject = Object.assign({}, txObject);
 
@@ -209,17 +234,31 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           };
 
           // send money to contract
-          web3.eth.sendTransaction(initialTxObject, (fundError) => {
+          web3.eth.sendTransaction(initialTxObject, (fundError, txHash) => {
             if (fundError) {
               throwError(`while funding contract '${contractName}': ${fundError}`);
             } else {
-              // run contract setup method
-              contractResultObject.setup(setupTxObject, (setupError) => {
-                if (setupError) {
-                  throwError(`while setting up contract '${contractName}': ${setupError}`);
+              // check that init transaction was sent
+              getTransactionSuccess(web3, txHash, (fundSuccessError) => {
+                if (fundSuccessError) {
+                  throwError(`while checking funding tx contract '${contractName}': ${fundSuccessError}`);
                 } else {
-                  // start testing methods sequentially
-                  runTestMethodsSeq(startIndex, testMethods, contractResultObject, nextContract, nextMethod);
+                  // run contract setup method
+                  contractResultObject.setup(setupTxObject, (setupError, setupTxHash) => {
+                    if (setupError) {
+                      throwError(`while setting up contract '${contractName}': ${setupError}`);
+                    } else {
+                      // check setup transaction
+                      getTransactionSuccess(web3, setupTxHash, (setupSuccessError) => {
+                        if (setupSuccessError) {
+                          throwError(`while checking setting up contract '${contractName}': ${setupSuccessError}`);
+                        } else {
+                          // start testing methods sequentially
+                          runTestMethodsSeq(startIndex, testMethods, contractResultObject, nextContract, nextMethod);
+                        }
+                      });
+                    }
+                  });
                 }
               });
             }
@@ -299,8 +338,13 @@ ${chalk.green(`${reportLogs.success} passing`)}
         }
       };
 
-      // test each contract sequentially
-      testContractsSeq(startIndex, testContracts, contractComplete);
+      // if no test contracts, end testing
+      if (testContracts.length === 0) {
+        contractComplete(false);
+      } else {
+        // test each contract sequentially
+        testContractsSeq(startIndex, testContracts, contractComplete);
+      }
     }
   });
 }
