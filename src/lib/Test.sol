@@ -10,4 +10,5 @@ contract Test {
   }
 
   event AssertTrueLog(bool _testValue, string _message);
+  event log_uint(uint256 _logValue, string _message);
 }

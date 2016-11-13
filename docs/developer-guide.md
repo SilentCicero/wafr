@@ -153,6 +153,7 @@ contract Test {
   }
 
   event AssertTrueLog(bool _testValue, string _message);
+  event log_uint(uint _logValue, string _message);
 }
 ```
 
@@ -162,10 +163,9 @@ So far this is the test harness. It may change and grow overtime. For now expect
 
 There are a few todo items for `wafr`, here are a few of them:
 
-1. `LogString` - will log a string
-2. `LogUnit` - will log a single uint
-3. `LogAddress` - will log an address
-4. `LogBool` - will log a bool
+1. `log_string` - will log a string
+2. `log_address` - will log an address
+3. `log_bool` - will log a bool
 
 ## Contributing
 

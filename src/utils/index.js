@@ -149,6 +149,81 @@ if (typeof process !== 'undefined') {
   }
 }
 
+// increase the testrpc provider time by a specific amount, then mine
+function increaseProviderTime(provider, time, callback) {
+  if (typeof time !== 'number') {
+    callback('error while increasing TestRPC provider time, time value must be a number.', null);
+    return;
+  }
+
+  provider.sendAsync({
+    method: 'evm_increaseTime',
+    params: [time],
+  }, (increaseTimeError) => {
+    if (increaseTimeError) {
+      callback(`error while increasing TestRPC provider time: ${JSON.stringify(increaseTimeError)}`, null);
+    } else {
+      provider.sendAsync({
+        method: 'evm_mine',
+      }, (mineError) => {
+        if (mineError) {
+          callback(`while mining block to increase time on TestRPC provider: ${JSON.stringify(mineError)}`, null);
+        } else {
+          callback(null, true);
+        }
+      });
+    }
+  });
+}
+
+// increase the TestRPC blocks by a specific count recursively
+function increaseBlockRecursively(provider, count, total, callback) {
+  // if the count hits the total, stop the recursion
+  if (count >= total) {
+    callback(null, true);
+  } else {
+    // else mine a block
+    provider.sendAsync({
+      method: 'evm_mine',
+    }, (mineError) => {
+      if (mineError) {
+        callback(`while mining to increase block: ${JSON.stringify(mineError)}`, null);
+      } else {
+        increaseBlockRecursively(provider, count + 1, total, callback);
+      }
+    });
+  }
+}
+
+// increase provider by block
+function increaseProviderBlock(provider, blocks, callback) {
+  increaseBlockRecursively(provider, 0, blocks, callback);
+}
+
+// get block increase value from method name
+function getBlockIncreaseFromName(methodName) {
+  const matchNumbers = String(methodName).match(/_increaseBlockBy(\d+)/);
+
+  if (matchNumbers !== null
+    && typeof matchNumbers[1] === 'string') {
+    return parseInt(matchNumbers[1], 10);
+  }
+
+  return 0;
+}
+
+// get time increase value from method name
+function getTimeIncreaseFromName(methodName) {
+  const matchNumbers = String(methodName).match(/_increaseTimeBy(\d+)/);
+
+  if (matchNumbers !== null
+    && typeof matchNumbers[1] === 'string') {
+    return parseInt(matchNumbers[1], 10);
+  }
+
+  return 0;
+}
+
 // export util modules
 module.exports = {
   symbols,
@@ -160,4 +235,8 @@ module.exports = {
   log,
   buildTestContractsArray,
   getTransactionSuccess,
+  increaseProviderTime,
+  increaseProviderBlock,
+  getTimeIncreaseFromName,
+  getBlockIncreaseFromName,
 };

@@ -12,6 +12,10 @@ const contractIsTest = utils.contractIsTest;
 const getTestMethodsFromABI = utils.getTestMethodsFromABI;
 const buildTestContractsArray = utils.buildTestContractsArray;
 const getTransactionSuccess = utils.getTransactionSuccess;
+const getTimeIncreaseFromName = utils.getTimeIncreaseFromName;
+const increaseProviderTime = utils.increaseProviderTime; // eslint-disable-line
+const increaseProviderBlock = utils.increaseProviderBlock;
+const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
 const report = utils.report;
 const provider = TestRPC.provider({
   // gasLimit: '0x14F46B0400',
@@ -51,44 +55,24 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
     duration: 0,
   };
 
-  // assert true log
-  const assertTrueLogEvent = contractObject.AssertTrueLog({}, eventFilterObject); // eslint-disable-line
+  // fire testmethod tx
+  const fireTestMethod = () => {
+    // assert true log
+    const assertTrueLogEvent = contractObject.AssertTrueLog({}, eventFilterObject); // eslint-disable-line
 
-  // watch for log
-  assertTrueLogEvent.watch((assertTrueLogError, assertTrueLog) => {
-    // handle error
-    if (assertTrueLogError) {
-      throwError(`error while listening for AssertTrueLog ${assertTrueLogError}`);
-    } else {
-      // stash log
-      methodReport.logs[assertTrueLog.logIndex] = {
-        type: 'AssertTrue',
-        args: assertTrueLog.args,
-        logIndex: assertTrueLog.logIndex,
-      };
+    // complte out method, no errors
+    const completeMethod = () => {
+      // calculate duration
+      methodReport.duration = ((new Date()).getTime()) - methodReport.startTime;
 
-      // if the logged testValue is false, then report error
-      if (assertTrueLog.args._testValue === false) { // eslint-disable-line
-        methodReport.status = 'failure';
-        assertTrueLogEvent.stopWatching();
-        return;
-      }
-    }
-  });
+      // compiling contracts
+      if (methodReport.status === 'failure') {
+        report(`     ${chalk.red(symbols.err)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
 
-  // complte out method, no errors
-  const completeMethod = () => {
-    // calculate duration
-    methodReport.duration = ((new Date()).getTime()) - methodReport.startTime;
+        methodReport.logs.forEach((methodLog, methodLogIndex) => {
+          const message = methodLog.args._message; // eslint-disable-line
 
-    // compiling contracts
-    if (methodReport.status === 'failure') {
-      report(`     ${chalk.red(symbols.err)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
-
-      methodReport.logs.forEach((methodLog, methodLogIndex) => {
-        const message = methodLog.args._message; // eslint-disable-line
-
-        report(`
+          report(`
           -----------------
 
           ${chalk.red('assertion failed (assertTrue)')}
@@ -97,45 +81,96 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
           value (a): false,
           message: ${message}
           `);
-      });
-    } else {
-      report(`     ${chalk.green(symbols.ok)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
-    }
+        });
+      } else {
+        report(`     ${chalk.green(symbols.ok)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
+      }
 
-    // fire next method, this is fired every method
-    nextMethod(methodReport);
+      // fire next method, this is fired every method
+      nextMethod(methodReport);
 
-    // new index is less than length
-    if (nextIndex < testMethods.length) {
-      assertTrueLogEvent.stopWatching();
-      runTestMethodsSeq(nextIndex, testMethods, contractObject, nextContract, nextMethod);
-    } else {
-      // Test contract is complete
-      nextContract();
-    }
+      // new index is less than length
+      if (nextIndex < testMethods.length) {
+        assertTrueLogEvent.stopWatching();
+        runTestMethodsSeq(nextIndex, testMethods, contractObject, nextContract, nextMethod);
+      } else {
+        // Test contract is complete
+        nextContract();
+      }
+    };
+
+    // watch for log
+    assertTrueLogEvent.watch((assertTrueLogError, assertTrueLog) => {
+      // handle error
+      if (assertTrueLogError) {
+        throwError(`error while listening for AssertTrueLog ${assertTrueLogError}`);
+      } else {
+        // stash log
+        methodReport.logs[assertTrueLog.logIndex] = {
+          type: 'AssertTrue',
+          args: assertTrueLog.args,
+          logIndex: assertTrueLog.logIndex,
+        };
+
+        // if the logged testValue is false, then report error
+        if (assertTrueLog.args._testValue === false) { // eslint-disable-line
+          methodReport.status = 'failure';
+          assertTrueLogEvent.stopWatching();
+          return;
+        }
+      }
+    });
+
+    contractObject[methodName](methodTxObject, (methodError, methodTxHash) => {
+      // has method error
+      if (methodError) {
+        if (String(methodName.toLowerCase()).includes('throw')
+        && JSON.stringify(methodError.message).includes('JUMP')) {
+          completeMethod();
+        } else {
+          throwError(`error while testing method '${methodName}': ${methodError}`);
+        }
+      } else {
+        // transaction is success
+        getTransactionSuccess(web3, methodTxHash, (txSuccessError) => {
+          if (txSuccessError) {
+            throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
+          } else {
+            completeMethod();
+          }
+        });
+      }
+    });
   };
 
-  // fire testmethod tx
-  contractObject[methodName](methodTxObject, (methodError, methodTxHash) => {
-    // has method error
-    if (methodError) {
-      if (String(methodName.toLowerCase()).includes('throw')
-      && JSON.stringify(methodError.message).includes('JUMP')) {
-        completeMethod();
+  // get time increase
+  const timeIncrease = getTimeIncreaseFromName(methodName);
+  const blockIncrease = getBlockIncreaseFromName(methodName);
+
+  // if there is an increase time command
+  // then increase the time and mine a block
+  if (timeIncrease > 0) {
+    increaseProviderTime(provider, timeIncrease, (increaseTimeError) => {
+      if (increaseTimeError) {
+        throwError(`error while increasing TestRPC provider time by ${timeIncrease} seconds: ${increaseTimeError}`);
       } else {
-        throwError(`error while testing method '${methodName}': ${methodError}`);
+        fireTestMethod();
       }
-    } else {
-      // transaction is success
-      getTransactionSuccess(web3, methodTxHash, (txSuccessError) => {
-        if (txSuccessError) {
-          throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
+    });
+  } else {
+    if (blockIncrease > 0) {
+      increaseProviderBlock(provider, blockIncrease, (increaseBlockError) => {
+        if (increaseBlockError) {
+          throwError(`error while increasing TestRPC provider by ${blockIncrease} blocks: ${increaseBlockError}`);
         } else {
-          completeMethod();
+          fireTestMethod();
         }
       });
+    } else {
+      // fire the test method
+      fireTestMethod();
     }
-  });
+  }
 }
 
 // test each contract one after the other
@@ -204,6 +239,28 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           initialTxObject.value = contractBalance;
           initialTxObject.to = contractResultObject.address;
           const setupTxObject = Object.assign({}, txObject);
+
+          // setup uint log event
+          const uintLogEvent = contractResultObject.log_uint({}, {}); // eslint-disable-line
+
+          // watch for uint log
+          uintLogEvent.watch((uintLogEventError, logEventResult) => {
+            if (uintLogEventError) {
+              throwError(`while listening for uint log event: ${uintLogEventError}`);
+            } else {
+              const logValue = logEventResult.args._logValue; // eslint-disable-line
+              const logMessage = logEventResult.args._message; // eslint-disable-line
+
+              report(`
+          -----------------
+
+          ${chalk.green('uint log fired')}
+          index: ${logEventResult.logIndex}
+          value: ${logValue},
+          message: ${logMessage}
+          `);
+            }
+          });
 
           // next method method
           const nextMethod = (methodLog) => {
@@ -327,8 +384,8 @@ function wafr(options, callback) {
           // report done in log
           report(`
 
-${chalk.red(`${reportLogs.failure} not passing`)}
-${chalk.green(`${reportLogs.success} passing`)}
+  ${reportLogs.failure && chalk.red(`${reportLogs.failure} not passing`) || ''}
+  ${reportLogs.success && chalk.green(`${reportLogs.success} passing`) || ''}
 `);
 
           // fire callback

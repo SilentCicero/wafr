@@ -183,7 +183,75 @@ contract MyTest is Test {
 }
 ```
 
+### Increase EVM Block Numbers
+
+wafr allows you to increase block numbers before a unit test method is fired, just add `_inceaseBlockBy` followed by the amount of blocks to increase by (i.e. `30`) in your test method name.
+
+```
+pragma solidity ^0.4.4;
+
+import "wafr/Test.sol";
+
+contract MyTest is Test {
+  uint startBlockNumber;
+
+  function setup() {
+    startBlockNumber = block.number;
+  }
+
+  function test_moreBlocks_increaseBlockBy50() {
+    assertTrue((block.number - startBlockNumeber) >= 50, "current block number should be 50 blocks ahead or more.");
+  }
+}
+```
+
+## Increase EVM Time
+
+wafr allows you to increase the EVM time before a test is fired, just add `_increaseTimeBy` to your unit test method name followed by the seconds to increase the EVM (i.e. `3000`); The time will be increased and a single block mined to move the time ahead.
+
+```
+pragma solidity ^0.4.4;
+
+import "wafr/Test.sol";
+
+contract MyTest is Test {
+  uint startTime;
+
+  function setup() {
+    startTime = now;
+  }
+
+  function test_moreTimePlease_increaseTimeBy3000() {
+    assertTrue((now - startTime) >= 3000, "current EVM time - start time is greater than 3000 seconds");
+  }
+}
+```
+
+### Basic Logging
+
+`log_uint(uint, string)` -- wafr has a single `log_uint` available now, so you can log a `uint` along with a string `message`.
+
+```
+pragma solidity ^0.4.4;
+
+import "wafr/Test.sol";
+
+contract MyTest is Test {
+  uint someValue = 5000;
+
+  function test_someLog() {
+    assertTrue(someValue == 5000, "some value should be 5000");
+    log_uint(someValue, "should log 5000 in the console");
+  }
+}
+```
+
 ## Gotchas
 
 1. Test contracts must inherit the `wafr/Test.sol` `Test` contract.
 2. There are not many assert methods yet
+3. You cannot increase the time and block in the same unit test (i.e. you cant use `_increaseTimeBy` and `_increaseBlockBy` in the same test method).
+4. Increase time is in seconds.
+5. All unit tests need to have `test` somewhere in the method name
+6. Unit test methods may not be tested in the order you have written them
+7. Funds are sent to your Test contract first, then the `setup` method is called

@@ -1,3 +1,12 @@
+# 0.1.6 -- Increase EVM/Block Time Features, log_uint, more docs
+
+1. Added `_increaseTimeBy` feature, increase time by seconds before test
+2. Added `_increaseBlockBy` feature, increase blocks by number before test
+3. `log_uint` -- added uint logging (uint, string)
+4. Added more feature docs in `user-guide`
+5. Added coverage for increase time/block features
+6. Made some console updates
+
 # 0.1.5 -- Fix fauceting, setup success, more user-guide docs
 
 1. Fixed fauceting

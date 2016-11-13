@@ -107,6 +107,34 @@ describe('run test ', () => {
       });
     });
 
+    it('increase block feature should function', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/increaseBlockBy',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs.length, 1);
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs[0].args._testValue, true); // eslint-disable-line
+        done();
+      });
+    });
+
+    it('increase time feature should function', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/increaseTimeBy',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs.length, 2);
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs[0].args._testValue, true); // eslint-disable-line
+        done();
+      });
+    });
+
     it('no tests dir', (done) => {
       // run solTest
       wafr({
