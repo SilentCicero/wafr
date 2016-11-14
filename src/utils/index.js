@@ -102,7 +102,7 @@ function contractIsTest(contractABI) {
   // check method ABI
   contractABI.forEach((methodObject) => {
     // does it contain the method AssertTrueLog, if so, its a test
-    if (methodObject.name === 'AssertTrueLog') {
+    if (methodObject.name === 'AssertEqLog') {
       returnValue = true;
     }
   });

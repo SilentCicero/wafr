@@ -11,6 +11,24 @@ contract AssertTrueLargeTest is Test {
     assertTrue(true, "one true assert");
   }
 
+  function test_twoTrueAssertNoMessage() {
+    assertTrue(true);
+    assertTrue(true);
+  }
+
+  function test_twoFalseAssertNoMessage() {
+    assertTrue(false);
+    assertTrue(false);
+  }
+
+  function test_oneTrueAssertNoMessage() {
+    assertTrue(true);
+  }
+
+  function test_oneFalseAssertNoMessage() {
+    assertTrue(false);
+  }
+
   function test_twoFalseAsserts() {
     assertTrue(false, "one false assert");
     assertTrue(false, "two false asserts");

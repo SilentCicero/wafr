@@ -1,3 +1,13 @@
+# 0.1.7 -- assertEq, New Logging System, More tests
+
+1. Added `assertEq`, supported types `bool`, `uint`, `string`, `bytes`, `address`, `int`
+2. Added new logging system to accomidate `assertEq`
+3. More user-docs and recomendations
+4. More test coverage of new features
+5. Added `assertFalse` support
+6. Remove `--root` property from example script
+7. Test coverage on dir depth
+
 # 0.1.6 -- Increase EVM/Block Time Features, log_uint, more docs
 
 1. Added `_increaseTimeBy` feature, increase time by seconds before test

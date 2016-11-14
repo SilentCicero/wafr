@@ -77,7 +77,7 @@ node ./bin/wafr.js ./example/
 
 ### Assertion Methods
 
- `assertTrue` (bool testValue, string message)
+ `assertTrue` (bool testValue[, string message])
 
  ```
  pragma solidity ^0.4.4;
@@ -92,6 +92,46 @@ node ./bin/wafr.js ./example/
    }
  }
  ```
+
+ `assertFalse` (bool testValue[, string message])
+
+ ```
+ pragma solidity ^0.4.4;
+
+ import "wafr/Test.sol";
+
+ contract MyTest is Test {
+   uint someValue = 5;
+
+   function test_someValueIsFive() {
+     assertFalse(someValue != 6, "some value should not be 5");
+   }
+ }
+ ```
+
+ `assertEq` ([type] actualValue, [type] expectedValue[, string message])
+
+  ** Available Types
+  - uint
+  - bool
+  - int
+  - address
+  - bytes
+  - string
+
+  ```
+  pragma solidity ^0.4.4;
+
+  import "wafr/Test.sol";
+
+  contract MyTest is Test {
+    uint someValue = 5;
+
+    function test_someValueIsFive() {
+      assertEq(someValue, uint(5), "some value should equal 5");
+    }
+  }
+  ```
 
 ### Unit Tests
 
@@ -251,7 +291,20 @@ contract MyTest is Test {
 1. Test contracts must inherit the `wafr/Test.sol` `Test` contract.
 2. There are not many assert methods yet
 3. You cannot increase the time and block in the same unit test (i.e. you cant use `_increaseTimeBy` and `_increaseBlockBy` in the same test method).
-4. Increase time is in seconds.
-5. All unit tests need to have `test` somewhere in the method name
-6. Unit test methods may not be tested in the order you have written them
-7. Funds are sent to your Test contract first, then the `setup` method is called
+4. All unit tests need to have `test` somewhere in the method name
+5. Unit test methods may not be tested in the order you have written them
+6. Funds are sent to your Test contract first, then the `setup` method is called
+7. `int4`, `uint8`, `bytes8` etc.. are not supported by `assertEq`, you must convert them to either a `uint`, `int` or `bytes32` in order to be evaluated
+8. `bytes` and `string` are compared by `sha3` hash in wafr, not by their actual value
+9. Currently, the values shown in `wafr` are the `bytes32` equivalents of values or hashes (i.e. not `1` but `0x00...002d`), this may change in the future
+10. When using `assertEq`, dont use literal numbers, wrap them in `uint` or `int` (i.e. not `assertEq(1, 2);` but `assertEq(uint(1), uint(2));`)
+
+## Other Awesome Frameworks
+
+ - [Truffle](https://github.com/ConsenSys/truffle) -- a solidity/js dApp framework
+ - [Embark](https://github.com/iurimatias/embark-framework) -- a solidity/js dApp framework
+ - [dapple](https://github.com/nexusdev/dapple) -- a solidity dApp framework
+ - [chaitherium](https://github.com/SafeMarket/chaithereum) -- a JS web3 unit testing framework
+ - [browser-solidity](https://ethereum.github.io/browser-solidity) -- an in browser Solidity IDE
+ - [browser-solidity](https://ethereum.github.io/browser-solidity) -- an in browser Solidity IDE
+ - [contest](https://github.com/DigixGlobal/contest) -- a JS testing framework for contracts

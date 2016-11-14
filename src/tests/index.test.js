@@ -1,5 +1,7 @@
 const assert = require('chai').assert;
 const wafr = require('../index.js');
+const bytes32True = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const bytes32False = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 describe('run test ', () => {
   describe('assertTrue', () => {
@@ -22,26 +24,26 @@ describe('run test ', () => {
 
         assert.equal(typeof assertTrueSmallLogs.test_oneFalseAssert, 'object');
         assert.equal(assertTrueSmallLogs.test_oneFalseAssert.logs.length, 1);
-        assert.equal(assertTrueSmallLogs.test_oneFalseAssert.logs[0].args._testValue, false); // eslint-disable-line
+        assert.equal(assertTrueSmallLogs.test_oneFalseAssert.logs[0].args._actualValue, bytes32False); // eslint-disable-line
 
         assert.equal(typeof assertTrueSmallLogs.test_oneTrueAssert, 'object');
         assert.equal(assertTrueSmallLogs.test_oneTrueAssert.logs.length, 1);
-        assert.equal(assertTrueSmallLogs.test_oneTrueAssert.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(assertTrueSmallLogs.test_oneTrueAssert.logs[0].args._actualValue, bytes32True); // eslint-disable-line
 
 
         const assertTrueLargeLogs = res.logs.AssertTrueLargeTest.logs;
 
         assert.equal(typeof assertTrueLargeLogs.test_threeTrueAssert, 'object');
         assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs.length, 3);
-        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[0].args._testValue, true); // eslint-disable-line
-        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[1].args._testValue, true); // eslint-disable-line
-        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[2].args._testValue, true); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[0].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[1].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeTrueAssert.logs[2].args._actualValue, bytes32True); // eslint-disable-line
 
         assert.equal(typeof assertTrueLargeLogs.test_oneTrueAssert, 'object');
         assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs.length, 3);
-        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[0].args._testValue, false); // eslint-disable-line
-        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[1].args._testValue, false); // eslint-disable-line
-        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[2].args._testValue, false); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[0].args._actualValue, bytes32False); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[1].args._actualValue, bytes32False); // eslint-disable-line
+        assert.equal(assertTrueLargeLogs.test_threeFalseAssert.logs[2].args._actualValue, bytes32False); // eslint-disable-line
 
         const assertTrueImportLogs = res.logs.AssertTrueImportTest.logs;
 
@@ -50,11 +52,11 @@ describe('run test ', () => {
 
         assert.equal(typeof assertTrueImportLogs.test_fiveAssertFalse, 'object');
         assert.equal(assertTrueImportLogs.test_fiveAssertFalse.logs.length, 5);
-        assert.equal(assertTrueImportLogs.test_fiveAssertFalse.logs[2].args._testValue, false); // eslint-disable-line
+        assert.equal(assertTrueImportLogs.test_fiveAssertFalse.logs[2].args._actualValue, bytes32False); // eslint-disable-line
 
         assert.equal(typeof assertTrueImportLogs.test_fiveAssertTrue, 'object');
         assert.equal(assertTrueImportLogs.test_fiveAssertTrue.logs.length, 5);
-        assert.equal(assertTrueImportLogs.test_fiveAssertTrue.logs[2].args._testValue, true); // eslint-disable-line
+        assert.equal(assertTrueImportLogs.test_fiveAssertTrue.logs[2].args._actualValue, bytes32True); // eslint-disable-line
 
         const assertTrueLogs = res.logs.AssertTrueTest.logs;
 
@@ -93,6 +95,42 @@ describe('run test ', () => {
       });
     });
 
+    it('should compile contract dir test and import depth', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/dirDepth',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        done();
+      });
+    });
+
+    it('assertFalse should function properly', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/assertFalse',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        done();
+      });
+    });
+
+    it('assertEq should function properly', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/assertEq',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        done();
+      });
+    });
+
     it('should run through empty tests, and skip bad contracts', (done) => {
       // run solTest
       wafr({
@@ -116,7 +154,7 @@ describe('run test ', () => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs.length, 1);
-        assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs[0].args._actualValue, bytes32True); // eslint-disable-line
         done();
       });
     });
@@ -130,7 +168,7 @@ describe('run test ', () => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs.length, 2);
-        assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs[0].args._actualValue, bytes32True); // eslint-disable-line
         done();
       });
     });
@@ -158,11 +196,11 @@ describe('run test ', () => {
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.FaucetTest.name, 'FaucetTest');
         assert.equal(typeof res.logs.FaucetTest.logs.test_contractBalance, 'object');
-        assert.equal(res.logs.FaucetTest.logs.test_contractBalance.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(res.logs.FaucetTest.logs.test_contractBalance.logs[0].args._actualValue, bytes32True); // eslint-disable-line
         assert.equal(typeof res.logs.FaucetTest.logs.test_sendFundsToContract, 'object');
         assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs.length, 2);
-        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._testValue, true); // eslint-disable-line
-        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._actualValue, bytes32True); // eslint-disable-line
         done();
       });
     });
@@ -201,11 +239,11 @@ describe('run test ', () => {
 
         assert.equal(typeof setupTestLogs.test_startBool, 'object');
         assert.equal(setupTestLogs.test_startBool.logs.length, 1);
-        assert.equal(setupTestLogs.test_startBool.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(setupTestLogs.test_startBool.logs[0].args._actualValue, bytes32True); // eslint-disable-line
 
         assert.equal(typeof setupTestLogs.test_startNumber, 'object');
         assert.equal(setupTestLogs.test_startNumber.logs.length, 1);
-        assert.equal(setupTestLogs.test_startNumber.logs[0].args._testValue, true); // eslint-disable-line
+        assert.equal(setupTestLogs.test_startNumber.logs[0].args._actualValue, bytes32True); // eslint-disable-line
 
         done();
       });

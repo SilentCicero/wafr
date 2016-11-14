@@ -43,7 +43,6 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 
   // assemble tx object
   const methodTxObject = Object.assign({}, txObject);
-  const eventFilterObject = {};
   const methodName = testMethods[currentIndex].name;
   const methodReport = {
     txObject: methodTxObject,
@@ -58,7 +57,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
   // fire testmethod tx
   const fireTestMethod = () => {
     // assert true log
-    const assertTrueLogEvent = contractObject.AssertTrueLog({}, eventFilterObject); // eslint-disable-line
+    const assertEqLogEvent = contractObject.AssertEqLog({}, {}); // eslint-disable-line
 
     // complte out method, no errors
     const completeMethod = () => {
@@ -69,18 +68,24 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       if (methodReport.status === 'failure') {
         report(`     ${chalk.red(symbols.err)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
 
+        // cycle through logs and report errors
         methodReport.logs.forEach((methodLog, methodLogIndex) => {
           const message = methodLog.args._message; // eslint-disable-line
+          const actual = methodLog.args._actualValue; // eslint-disable-line
+          const expected = methodLog.args._expectedValue; // eslint-disable-line
 
-          report(`
+          // if the log status is a failure log
+          if (methodLog.status === 'failure') {
+            report(`
           -----------------
 
-          ${chalk.red('assertion failed (assertTrue)')}
+          ${chalk.red(`assertion failed (${methodLog.type})`)}
           index: ${methodLogIndex}
-          value (e): true,
-          value (a): false,
+          value (e): ${actual},
+          value (a): ${expected},
           message: ${message}
-          `);
+            `);
+          }
         });
       } else {
         report(`     ${chalk.green(symbols.ok)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
@@ -91,7 +96,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 
       // new index is less than length
       if (nextIndex < testMethods.length) {
-        assertTrueLogEvent.stopWatching();
+        assertEqLogEvent.stopWatching();
         runTestMethodsSeq(nextIndex, testMethods, contractObject, nextContract, nextMethod);
       } else {
         // Test contract is complete
@@ -100,22 +105,24 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
     };
 
     // watch for log
-    assertTrueLogEvent.watch((assertTrueLogError, assertTrueLog) => {
+    assertEqLogEvent.watch((assertEqLogError, assertEqLog) => {
       // handle error
-      if (assertTrueLogError) {
-        throwError(`error while listening for AssertTrueLog ${assertTrueLogError}`);
+      if (assertEqLogError) {
+        throwError(`error while listening for assertEqLog ${assertEqLogError}`);
       } else {
         // stash log
-        methodReport.logs[assertTrueLog.logIndex] = {
-          type: 'AssertTrue',
-          args: assertTrueLog.args,
-          logIndex: assertTrueLog.logIndex,
+        methodReport.logs[assertEqLog.logIndex] = {
+          type: assertEqLog.args._type, // eslint-disable-line
+          args: assertEqLog.args,
+          logIndex: assertEqLog.logIndex,
+          status: 'success',
         };
 
-        // if the logged testValue is false, then report error
-        if (assertTrueLog.args._testValue === false) { // eslint-disable-line
+        // if actual does not equal expected, mark as failure, report error
+        if (assertEqLog.args._actualValue !== assertEqLog.args._expectedValue) { // eslint-disable-line
           methodReport.status = 'failure';
-          assertTrueLogEvent.stopWatching();
+          methodReport.logs[assertEqLog.logIndex].status = 'failure';
+          assertEqLogEvent.stopWatching();
           return;
         }
       }

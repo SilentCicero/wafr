@@ -18,10 +18,11 @@
     <img src="https://travis-ci.org/SilentCicero/wafr.svg" alt="Build Status" />
   </a>
 
-  <!-- Test Coverage -->
+  <!-- Test Coverage
   <a href="https://coveralls.io/r/SilentCicero/wafr">
     <img src="https://coveralls.io/repos/github/SilentCicero/wafr/badge.svg" alt="Test Coverage" />
   </a>
+   -->
 
   <!-- NPM Version -->
   <a href="https://www.npmjs.org/package/wafr">
@@ -105,7 +106,7 @@ Please help better the ecosystem by submitting issues and pull requests to defau
 You'll find more detailed information on using default and tailoring it to your needs in our guides:
 
 - [User guide](docs/user-guide.md) - Usage, configuration, FAQ and complementary tools.
-- [Developer guide](docs/developer-guide.md) - Contributing to default and writing your own plugins & formatters.
+- [Developer guide](docs/developer-guide.md) - Contributing to wafr and writing your own plugins & formatters.
 
 ## Help out
 
