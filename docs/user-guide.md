@@ -111,8 +111,8 @@ node ./bin/wafr.js ./example/
 
  `assertEq` ([type] actualValue, [type] expectedValue[, string message])
 
-  ** Available Types
-  [type] `uint`, `bool`, `int`, `address`, `bytes`, `string`
+  Available Types*:
+  - uint, bool, int, address, bytes, string
 
   ```
   pragma solidity ^0.4.4;
