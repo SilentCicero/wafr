@@ -105,7 +105,7 @@ ReportLog {
 
 ## Module Usage
 
-Using the `wafr` module is as simple as requiring wafr and then handling the `options` and `callback` inputs.
+Using the `wafr` module is as simple as requiring wafr and then handling the `options` and `callback` inputs. The `wafr` module is self-contained and doesn't use or interact with `fs` or `path` at all.
 
 ```js
 const wafr = require('wafr');
@@ -116,6 +116,23 @@ wafr({
 }, (error, reportObject) => {
   console.log(error, reportObject);
 });
+```
+
+## CLI
+
+This is the current wafr CLI window.
+
+```
+Usage
+  $ wafr <path to contract test>
+
+Options
+  --help         the help CLI
+  --output, -o   solc compile output to JSON
+  --version, -v  the package verson number
+
+Examples
+  $ wafr ./contracts --output ./build/contracts.json
 ```
 
 ## Tests

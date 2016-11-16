@@ -281,9 +281,11 @@ contract MyTest is Test {
 }
 ```
 
-## Path/Contract Imports (`import "..."`)
+## Paths And Contract Imports
 
-`wafr` builds your contracts from the specified `path` directory and below. It does not allow `../` in your import path.
+`wafr` builds your contracts from the specified `path` directory and below. It does not allow `../` in your `import` path.
+
+You cannot have `import "../../someContract.sol"`.
 
 If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If you have files in `contracts` then you will want to set your base directory to `wafr ./contracts`.
 

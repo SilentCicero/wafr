@@ -12,7 +12,9 @@ const cli = meow(`
       $ wafr <path to contract test>
 
     Options
-      --output, -o  solc compile output to JSON
+      --help         the help CLI
+      --output, -o   solc compile output to JSON
+      --version, -v  the package verson number
 
     Examples
       $ wafr ./contracts --output ./build/contracts.json

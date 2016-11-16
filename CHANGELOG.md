@@ -1,3 +1,7 @@
+# 0.1.9.1 -- bin output path fix
+
+1. Handle build path when it is `undefined`
+
 # 0.1.9 -- more path fixed, output contracts build
 
 1. More path fixes.. i.e. `.test.sol` or `~test.sol`

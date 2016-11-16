@@ -24,11 +24,9 @@ const provider = TestRPC.provider({
   // logger: console,
 });
 
-// console.log(provider);
-
 const accounts = Object.keys(provider.manager.state.accounts);
 const web3 = new Web3(provider);
-const txObject = { from: accounts[0], gas: 3000000 };
+const txObject = { from: accounts[0], gas: 600000000000 };
 
 // test each method sequentially...
 // 1.. then 2... then 3... and so on
