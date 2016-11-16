@@ -1,3 +1,8 @@
+# 0.1.8 -- fix non .sol paths
+
+1. Fix non `.sol` file paths from being compiled
+2. Add path and build related docs
+
 # 0.1.7 -- assertEq, New Logging System, More tests
 
 1. Added `assertEq`, supported types `bool`, `uint`, `string`, `bytes`, `address`, `int`

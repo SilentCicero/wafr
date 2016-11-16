@@ -77,7 +77,10 @@ function getInputSources(dirname, callback) {
         const parsedFileName = filename.replace(parsedDirName, '').replace(/^\//, '');
 
         // add input sources to output
-        if (filename.includes('.sol')) {
+        if (filename.substr(filename.lastIndexOf('.') + 1) === 'sol'
+          && filename.indexOf(0) !== '~'
+          && filename.indexOf(0) !== '#'
+          && filename.indexOf(0) !== '.') {
           sources[parsedFileName] = content;
         }
 

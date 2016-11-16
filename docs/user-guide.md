@@ -281,6 +281,12 @@ contract MyTest is Test {
 }
 ```
 
+## Path/Contract Imports (`import "..."`)
+
+`wafr` builds your contracts from the specified `path` directory and below. It does not allow `../` in your import path.
+
+If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If you have files in `contracts` then you will want to set your base directory to `wafr ./contracts`.
+
 ## Gotchas
 
 1. Test contracts must inherit the `wafr/Test.sol` `Test` contract.
@@ -293,6 +299,7 @@ contract MyTest is Test {
 8. `bytes` and `string` are compared by `sha3` hash in wafr, not by their actual value
 9. Currently, the values shown in `wafr` are the `bytes32` equivalents of values or hashes (i.e. not `1` but `0x00...002d`), this may change in the future
 10. When using `assertEq`, dont use literal numbers, wrap them in `uint` or `int` (i.e. not `assertEq(1, 2);` but `assertEq(uint(1), uint(2));`)
+11. Wafr does not allow `../` in your `import` paths, it is only from the specified path up
 
 ## Other Awesome Frameworks
 
