@@ -1,6 +1,9 @@
-# 0.1.9.1 -- bin output path fix
+# 0.2.0 -- bin output path fix, large contract fix
 
 1. Handle build path when it is `undefined`
+2. Fix gas errors
+3. Test deployment of large contracts
+4. More docs
 
 # 0.1.9 -- more path fixed, output contracts build
 

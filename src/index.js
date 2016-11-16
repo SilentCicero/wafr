@@ -18,7 +18,7 @@ const increaseProviderBlock = utils.increaseProviderBlock;
 const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
 const report = utils.report;
 const provider = TestRPC.provider({
-  gasLimit: 900000000000000,
+  gasLimit: 99999999999999999999,
   gasPrice: '1',
   // verbose: true,
   // logger: console,
@@ -26,7 +26,7 @@ const provider = TestRPC.provider({
 
 const accounts = Object.keys(provider.manager.state.accounts);
 const web3 = new Web3(provider);
-const txObject = { from: accounts[0], gas: 600000000000 };
+const txObject = { from: accounts[0], gas: '99999999999999999' };
 
 // test each method sequentially...
 // 1.. then 2... then 3... and so on
@@ -198,7 +198,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
   const contractABI = JSON.parse(testContracts[contractIndex].interface);
   const contractObject = web3.eth.contract(contractABI);
   const contractBytecode = testContracts[contractIndex].bytecode;
-  const contractBalance = 500000;
+  const contractBalance = 50000000000;
   const contractTxObject = Object.assign({ data: contractBytecode },
     Object.assign({}, txObject));
 
@@ -243,6 +243,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           const testMethods = getTestMethodsFromABI(contractABI);
           const startIndex = 0;
           const initialTxObject = Object.assign({}, txObject);
+          initialTxObject.from = accounts[1];
           initialTxObject.value = contractBalance;
           initialTxObject.to = contractResultObject.address;
           const setupTxObject = Object.assign({}, txObject);

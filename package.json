@@ -1,6 +1,6 @@
 {
   "name": "wafr",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "A super simple test harness for Solidity smart-contracts.",
   "scripts": {
     "start": "npm test",
@@ -60,12 +60,12 @@
     "ws": "1.1.1"
   },
   "devDependencies": {
+    "babel-eslint": "7.1.0",
     "chai": "3.5.0",
     "child_process": "1.0.2",
     "coveralls": "2.11.9",
     "cross-env": "1.0.7",
     "eslint": "2.10.1",
-    "babel-eslint": "7.1.0",
     "eslint-config-airbnb": "9.0.1",
     "eslint-import-resolver-webpack": "0.2.4",
     "eslint-plugin-import": "1.8.0",
@@ -76,7 +76,8 @@
     "mocha": "2.4.5",
     "pre-commit": "1.1.3",
     "rimraf": "2.5.2",
-    "sinon": "2.0.0-pre"
+    "sinon": "2.0.0-pre",
+    "test-cli": "^0.1.0"
   },
   "babel": {
     "presets": [

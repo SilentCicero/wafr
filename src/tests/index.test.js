@@ -95,6 +95,18 @@ describe('run test ', () => {
       });
     });
 
+    it('should compile campaign contracts and run large test', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/campaign',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        done();
+      });
+    });
+
     it('should compile contract dir test and import depth', (done) => {
       // run solTest
       wafr({

@@ -135,6 +135,9 @@ Examples
   $ wafr ./contracts --output ./build/contracts.json
 ```
 
+## Build output
+
+
 ## Tests
 
 The `wafr` testing hardness has several test cases instantiated in the `./src/tests/` dir. `wafr` is tested by running various test solidity contracts, then based on the output report, determines if it tests properly. Please feel free to add more coverage here and include the main tests in the `./src/tests/index.test.js`.
