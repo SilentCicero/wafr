@@ -51,6 +51,24 @@ function getTestMethodsFromABI(contractABI) {
   return testMethods;
 }
 
+// if the filename is not test like
+function nonTestFileName(filename) {
+  return !filename.toLowerCase().includes('test');
+}
+
+// get all non-test files from build sources
+function filterTestsFromOutput(sources) {
+  const outputObject = {};
+
+  Object.keys(sources).forEach((sourceName) => {
+    if (nonTestFileName(sourceName)) {
+      outputObject[sourceName] = Object.assign({}, sources[sourceName]);
+    }
+  });
+
+  return outputObject;
+}
+
 // get all contract input sources
 function getInputSources(dirname, callback) {
   let filesRead = 0;
@@ -75,12 +93,13 @@ function getInputSources(dirname, callback) {
         // parsed filename
         const parsedDirName = dirname.replace('./', '');
         const parsedFileName = filename.replace(parsedDirName, '').replace(/^\//, '');
+        const onlyFilename = filename.substr(filename.lastIndexOf('/') + 1);
 
         // add input sources to output
         if (filename.substr(filename.lastIndexOf('.') + 1) === 'sol'
-          && filename.indexOf(0) !== '~'
-          && filename.indexOf(0) !== '#'
-          && filename.indexOf(0) !== '.') {
+          && onlyFilename.charAt(0) !== '~'
+          && onlyFilename.charAt(0) !== '#'
+          && onlyFilename.charAt(0) !== '.') {
           sources[parsedFileName] = content;
         }
 
@@ -236,6 +255,7 @@ module.exports = {
   getTestMethodsFromABI,
   report,
   log,
+  filterTestsFromOutput,
   buildTestContractsArray,
   getTransactionSuccess,
   increaseProviderTime,

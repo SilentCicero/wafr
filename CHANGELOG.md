@@ -1,3 +1,11 @@
+# 0.1.9 -- more path fixed, output contracts build
+
+1. More path fixes.. i.e. `.test.sol` or `~test.sol`
+2. Output build chain using the `--output` option
+3. Expanded TestRPC `gasLimit`
+4. More user guide docs
+5. CLI enhancement with `--help` examples and options
+
 # 0.1.8 -- fix non .sol paths
 
 1. Fix non `.sol` file paths from being compiled

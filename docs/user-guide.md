@@ -287,6 +287,15 @@ contract MyTest is Test {
 
 If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If you have files in `contracts` then you will want to set your base directory to `wafr ./contracts`.
 
+## Build Output
+
+`wafr` allows you to output your non-test contracts for use in dApps and other systems by flagging `--output` or `-o` in the CLI, followed by your desired JSON filename (i.e. `./contracts.json`). This will output all non-test compiled contracts data to a JSON file.
+
+For example:
+`wafr ./contracts --output ./build/contracts.json`
+
+**Note, the new build JSON file is only created when tests have passed.**
+
 ## Gotchas
 
 1. Test contracts must inherit the `wafr/Test.sol` `Test` contract.

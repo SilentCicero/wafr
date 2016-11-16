@@ -18,11 +18,13 @@ const increaseProviderBlock = utils.increaseProviderBlock;
 const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
 const report = utils.report;
 const provider = TestRPC.provider({
-  // gasLimit: '0x14F46B0400',
+  gasLimit: 900000000000000,
   gasPrice: '1',
   // verbose: true,
   // logger: console,
 });
+
+// console.log(provider);
 
 const accounts = Object.keys(provider.manager.state.accounts);
 const web3 = new Web3(provider);
@@ -338,6 +340,7 @@ function wafr(options, callback) {
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
   const reportLogs = {
+    contracts: {},
     status: 'success',
     failure: 0,
     success: 0,
@@ -370,6 +373,9 @@ function wafr(options, callback) {
       // compiling contracts
       log('contracts compiled!');
 
+      // add output to report
+      reportLogs.contracts = output.contracts;
+
       // find and build test contracts array
       const testContracts = buildTestContractsArray(output.contracts);
       const startIndex = 0;
@@ -395,7 +401,7 @@ function wafr(options, callback) {
   ${reportLogs.success && chalk.green(`${reportLogs.success} passing`) || ''}
 `);
 
-          // fire callback
+          // report logs
           callback(null, reportLogs);
         } else {
           reportLogs.logs[contractReport.name] = contractReport;
