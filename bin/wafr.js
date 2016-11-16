@@ -23,7 +23,7 @@ const cli = meow(`
 });
 
 // output path
-const outputPath = path.resolve(cli.flags.output);
+const outputPath = cli.flags.output;
 
 // the main wafr code to run
 wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) => {
@@ -38,8 +38,8 @@ wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) 
       process.exit(1);
     } else {
       // if there is an output path, build sources
-      if (typeof outputPath === 'string') {
-        fs.writeFile(outputPath, JSON.stringify(utils.filterTestsFromOutput(wafrResult.contracts)), (writeFileError) => {
+      if (typeof outputPath !== 'undefined') {
+        fs.writeFile(path.resolve(outputPath), JSON.stringify(utils.filterTestsFromOutput(wafrResult.contracts)), (writeFileError) => {
           if (writeFileError) {
             throw new Error(`while writting output JSON file ${outputPath}: ${writeFileError}`);
           }
