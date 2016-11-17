@@ -2,7 +2,15 @@ const dir = require('node-dir');
 
 // function to handle throwing an errorin sol-test
 function throwError(error) {
-  throw new Error(`[wafr] ERROR: ${error}`);
+  const enhancement = errorEnhancement(error);
+
+  throw new Error(`[wafr] ERROR: ${error}
+
+    ${enhancement && `Error Enhancement:
+
+      ${enhancement}
+      ` || ''}
+    `);
 }
 
 // normal system log
@@ -146,13 +154,52 @@ function getTransactionSuccess(web3, hash, callback) {
       // this is probably wrong
       if (receipt.blockHash !== '0x') {
         clearInterval(receiptInterval);
-        return callback(null, true);
+        return callback(null, receipt);
       }
 
       // return false
       return false;
     });
   }, 100);
+}
+
+// error enhancement, more information about bad errors
+function errorEnhancement(inputMessage) {
+  var message = inputMessage; // eslint-disable-line
+  var outputMessage = null; // eslint-disable-line
+
+  // if the input message is an array or object
+  if (inputMessage !== null
+    && !isNaN(inputMessage)
+    && typeof inputMessage !== 'string') {
+    message = JSON.stringify(inputMessage);
+  }
+
+  // gauentee string convertion, null and other..
+  message = String(message);
+
+  // if message includes
+  if (message.includes('Compiled contract not found')) {
+    outputMessage = 'This could be due to a contract with the same name being compiled. Wafr doesnt allow two contracts with the same name. Look to see if any of your contracts have the same name.';
+  }
+
+  // if message includes
+  if (message.includes('invalid JUMP')) {
+    outputMessage = 'This can be caused by many things. One main cause is a `throw` flag being used somewhere in execution.';
+  }
+
+  // if message includes
+  if (message.includes('invalid opcode') || message.includes('invalid op code')) {
+    outputMessage = 'This can be caused by a contract which compiles fine, but doesnt execute properly in the Ethereum Virtual Machine. Such as using a `0x0` as an address.';
+  }
+
+  // if message includes
+  if (message.includes('out of gas')) {
+    outputMessage = 'This shouldnt happen in wafr, but could be due to a TestRPC account being out of gas when either deploying your contracts or running a test or setup method. Please report this error in the wafr github issues.';
+  }
+
+  // return output message
+  return outputMessage;
 }
 
 // normal terminal symbols
@@ -259,6 +306,7 @@ module.exports = {
   buildTestContractsArray,
   getTransactionSuccess,
   increaseProviderTime,
+  errorEnhancement,
   increaseProviderBlock,
   getTimeIncreaseFromName,
   getBlockIncreaseFromName,

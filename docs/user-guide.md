@@ -112,7 +112,7 @@ node ./bin/wafr.js ./example/
  `assertEq` ([type] actualValue, [type] expectedValue[, string message])
 
   Available Types*:
-  uint, bool, int, address, bytes, string
+  uint, uint256, bool, int, int256, bytes32, address, bytes, string
 
   ```
   pragma solidity ^0.4.4;
@@ -318,6 +318,5 @@ For example:
  - [Embark](https://github.com/iurimatias/embark-framework) -- a solidity/js dApp framework
  - [dapple](https://github.com/nexusdev/dapple) -- a solidity dApp framework
  - [chaitherium](https://github.com/SafeMarket/chaithereum) -- a JS web3 unit testing framework
- - [browser-solidity](https://ethereum.github.io/browser-solidity) -- an in browser Solidity IDE
  - [browser-solidity](https://ethereum.github.io/browser-solidity) -- an in browser Solidity IDE
  - [contest](https://github.com/DigixGlobal/contest) -- a JS testing framework for contracts

@@ -1,3 +1,7 @@
+// disable console.warn
+console.warn = () => {}; // eslint-disable-line
+
+// require modules
 const Web3 = require('web3');
 const TestRPC = require('ethereumjs-testrpc');
 const solc = require('solc');
@@ -20,8 +24,9 @@ const report = utils.report;
 const provider = TestRPC.provider({
   gasLimit: 99999999999999999999,
   gasPrice: '1',
-  // verbose: true,
-  // logger: console,
+  verbose: false,
+  logger: { log: () => {} },
+  debug: false,
 });
 
 const accounts = Object.keys(provider.manager.state.accounts);
@@ -48,6 +53,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
     txObject: methodTxObject,
     index: currentIndex,
     name: methodName,
+    receipt: {},
     status: 'success',
     logs: [],
     startTime: ((new Date()).getTime()),
@@ -97,6 +103,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       // new index is less than length
       if (nextIndex < testMethods.length) {
         assertEqLogEvent.stopWatching();
+
         runTestMethodsSeq(nextIndex, testMethods, contractObject, nextContract, nextMethod);
       } else {
         // Test contract is complete
@@ -139,10 +146,14 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
         }
       } else {
         // transaction is success
-        getTransactionSuccess(web3, methodTxHash, (txSuccessError) => {
+        getTransactionSuccess(web3, methodTxHash, (txSuccessError, txReceipt) => {
           if (txSuccessError) {
             throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
           } else {
+            // if success, set the receipt
+            methodReport.receipt = txReceipt;
+
+            // complete method processing
             completeMethod();
           }
         });
@@ -358,7 +369,7 @@ function wafr(options, callback) {
     };
 
     // compiling contracts
-    log('compiling contracts from sources...');
+    log(`compiling contracts from ${Object.keys(sources).length} sources...`);
 
     // compile solc output (sync method)
     const output = solc.compile(compilerInput, optimizeCompiler);
@@ -366,7 +377,7 @@ function wafr(options, callback) {
     // handle all compiling errors
     if (output.errors) {
       output.errors.forEach((outputError) => {
-        throwError(`while compiling contracts: ${outputError}`);
+        throwError(`while compiling contracts in path ${contractsPath}: ${outputError}`);
       });
     } else {
       // compiling contracts

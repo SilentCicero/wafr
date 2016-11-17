@@ -1,3 +1,12 @@
+# 0.2.1 -- add tx receipt to report
+
+1. Add tx receipt per method test for reporting
+2. Readme docs update, dev and user docs
+3. `assertEq` type `bytes32` added
+4. More test coverage, rigidity and expectations
+5. Error enhancement for errors that throw `throwError`
+6. Disable `console.warn` messages from ProviderEngine
+
 # 0.2.0 -- bin output path fix, large contract fix
 
 1. Handle build path when it is `undefined`

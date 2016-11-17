@@ -65,7 +65,7 @@ Intakes a single `options` object, and outputs a single `callback` with a testin
 **Parameters**
 
 -   `options` **Object** the main options object that contains the path to build and test the Test contracts.
--   `callback` **Function** a standard async callback, with an `error`, `result` layout, where the result is a report object of all contract method testing logs and data.
+-   `callback` **Function** a standard async callback, with an `error`, `result` layout, where the result is a complete report object of all contract method testing logs and data.
 
 callback result **Object**, example:
 
@@ -87,6 +87,7 @@ ReportLog {
         MethodLog {
           txObject: {},   // tx object used
           index: 1,       // Log index from the event
+          receipt: {},    // The TX receipt for processing the method
           name: 'test_method', // method name
           status: 'success', // or failure
           logs: [
@@ -137,10 +138,14 @@ Examples
 
 ## Build output
 
+The build output is handled in the `bin` folder. Where it does the work to use the `output` flag is provided, and writes an output build JSON file of the contracts to the specified paths.
+
 
 ## Tests
 
 The `wafr` testing hardness has several test cases instantiated in the `./src/tests/` dir. `wafr` is tested by running various test solidity contracts, then based on the output report, determines if it tests properly. Please feel free to add more coverage here and include the main tests in the `./src/tests/index.test.js`.
+
+Note, dont be afraid of all the failing tests, they are suppose to fail to check the accuracy of the `assert` methods.
 
 ## Bin
 

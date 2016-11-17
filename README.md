@@ -48,15 +48,10 @@ npm install -g wafr
 ## Usage
 
 ```
-wafr ./example
-
-// or locally
-
-node ./node_modules/wafr/bin/wafr.js ./example
+wafr ./contracts
 ```
 
 ```
-// found in: ./example/test.example.sol
 pragma solidity ^0.4.4;
 
 import "wafr/Test.sol";
@@ -71,7 +66,7 @@ contract MyTest is Test {
   }
 
   function test_basicUnitTest() {
-    assertTrue(firstNumber != secondNumber, "first number should not equal second number");
+    assertTrue(firstNumber != secondNumber, "first should not equal second");
   }
 
   function test_BasicThrow() {
@@ -82,7 +77,7 @@ contract MyTest is Test {
 }
 ```
 
-Note, run `npm run example` to see this example above in action.
+Note, run `npm run example` to see [this example](../../blob/master/example) above in action.
 
 ## About
 
@@ -92,10 +87,11 @@ Wafr acts as a simple testing system. It does very little:
 
 1. Compiles contracts
 2. Deployes any contract with `test` in filename that inherits `wafr/Test.sol`
-3. Sends some ether to the test contract
+3. Sends ether to your Test contract
 4. Runs the `setup` method, if any
-5. Then runs any method with `test` in the name
-6. Then it tests everything against the `assertTrue` method
+5. Runs any method with `test` in the name
+6. Then tests everything against the `assert` methods
+7. Generates a full report, `--output`s your contracts if desired
 
 ## Contributing
 

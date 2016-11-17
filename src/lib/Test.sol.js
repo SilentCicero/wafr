@@ -25,6 +25,14 @@ contract Test {
     AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), "");
   }
 
+  function assertEq(bytes32 _actual, bytes32 _expected) {
+    AssertEqLog("AssertEq", _actual, _expected, "");
+  }
+
+  function assertEq(bytes32 _actual, bytes32 _expected, string _message) {
+    AssertEqLog("AssertEq", _actual, _expected, _message);
+  }
+
   function assertEq(int _actual, int _expected) {
     AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), "");
   }

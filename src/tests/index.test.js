@@ -139,6 +139,29 @@ describe('run test ', () => {
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
+
+        // bytes 32 tests
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_oneValidEqBytes32.status, 'success');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_oneInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_twoInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_threeInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_oneInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_twoInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_threeInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_fourInvalidEqBytes32Message.status, 'failure');
+        assert.equal(res.logs.AssertEqBytes32Test.logs.test_mixValidEqBytes32Message.status, 'failure');
+
+        // uint tests
+        assert.equal(res.logs.AssertEqUintTest.logs.test_oneValidEqUint1.status, 'success');
+        assert.equal(res.logs.AssertEqUintTest.logs.test_oneValidEqUint2.status, 'success');
+        assert.equal(res.logs.AssertEqUintTest.logs.test_oneValidEqUint3.status, 'success');
+        assert.equal(res.logs.AssertEqUintTest.logs.test_validEmptyEqEmpty.status, 'success');
+
+        // address tests
+        assert.equal(res.logs.AssertEqAddressTest.logs.test_oneValidEqAddress.status, 'success');
+        assert.equal(res.logs.AssertEqAddressTest.logs.test_oneInvalidEmptyAddress.status, 'failure');
+        assert.equal(res.logs.AssertEqAddressTest.logs.test_messageSenderEq.status, 'success');
+        assert.equal(res.logs.AssertEqAddressTest.logs.test_twoValidAndInvalidEqAddress.status, 'failure');
         done();
       });
     });
@@ -167,6 +190,10 @@ describe('run test ', () => {
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs.length, 1);
         assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockBy5000.logs[0].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_someOtherFalseTest.status, 'failure');
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_increaseBlockNumber30211.status, 'success');
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_startBlock.status, 'success');
+        assert.equal(res.logs.IncreaseBlockTest.logs.test_someTest.status, 'success');
         done();
       });
     });
@@ -181,6 +208,10 @@ describe('run test ', () => {
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs.length, 2);
         assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.logs[0].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_expiry_increaseTimeBy30000.status, 'success');
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_increaseTimeBy800000_timecheck.status, 'success');
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_someOtherTest.status, 'success');
+        assert.equal(res.logs.IncreaseTimeTest.logs.test_someTest.status, 'success');
         done();
       });
     });
@@ -213,6 +244,9 @@ describe('run test ', () => {
         assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs.length, 2);
         assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._actualValue, bytes32True); // eslint-disable-line
         assert.equal(res.logs.FaucetTest.logs.test_sendFundsToContract.logs[0].args._actualValue, bytes32True); // eslint-disable-line
+        assert.equal(res.logs.FaucetTest.logs.test_contractBalance.status, 'success');
+        assert.equal(res.logs.FaucetTest.logs.test_contractBalance.status, 'success');
+        assert.equal(res.logs.FaucetTest.logs.test_oneFalseAssert.status, 'failure');
         done();
       });
     });
