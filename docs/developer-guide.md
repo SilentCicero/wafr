@@ -136,6 +136,12 @@ Examples
   $ wafr ./contracts --output ./build/contracts.json
 ```
 
+## Console
+
+Here is what the wafr test console looks like when some tests pass and some fail.
+
+<img src="https://github.com/SilentCicero/wafr/tree/master/assets/wafr-console.png" />
+
 ## Build output
 
 The build output is handled in the `bin` folder. Where it does the work to use the `output` flag is provided, and writes an output build JSON file of the contracts to the specified paths.
