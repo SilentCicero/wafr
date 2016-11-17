@@ -91,7 +91,7 @@ Wafr acts as a simple testing system. It does very little:
 4. Runs the `setup` method, if any
 5. Runs any method with `test` in the name
 6. Then tests everything against the `assert` methods
-7. Generates a full report, `--output`s your contracts if desired
+7. Generates a full report, `--output` your contracts in a `.json` file if desired
 
 ## Contributing
 

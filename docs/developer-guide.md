@@ -140,7 +140,7 @@ Examples
 
 Here is what the wafr test console looks like when some tests pass and some fail.
 
-<img src="https://github.com/SilentCicero/wafr/blob/master/assets/wafr-console.png?raw=true" />
+<img src="https://github.com/SilentCicero/wafr/blob/master/assets/wafr-console.png?raw=true" width="600" />
 
 ## Build output
 

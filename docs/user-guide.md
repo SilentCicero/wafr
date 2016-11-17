@@ -281,6 +281,23 @@ contract MyTest is Test {
 }
 ```
 
+## CLI
+
+This is the current wafr CLI window `wafr --help`.
+
+```
+Usage
+  $ wafr <path to contract test>
+
+Options
+  --help         the help CLI
+  --output, -o   solc compile output to JSON
+  --version, -v  the package verson number
+
+Examples
+  $ wafr ./contracts --output ./build/contracts.json
+```
+
 ## Console
 
 Here is what the wafr test console looks like when some tests pass and some fail.
