@@ -281,6 +281,12 @@ contract MyTest is Test {
 }
 ```
 
+## Console
+
+Here is what the wafr test console looks like when some tests pass and some fail.
+
+<img src="https://github.com/SilentCicero/wafr/blob/master/assets/wafr-console.png?raw=true" />
+
 ## Paths And Contract Imports
 
 `wafr` builds your contracts from the specified `path` directory and below. It does not allow `../` in your `import` path.
