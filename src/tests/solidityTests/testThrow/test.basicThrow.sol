@@ -39,4 +39,12 @@ contract BasicThrowTest is Test {
     assertTrue(true, "should be true");
     assertTrue(false, "should be false");
   }
+
+  function test_invalidThrow() {
+  }
+
+  function test_invalidThrowWithAsserts() {
+    assertTrue(true, "should be a throw");
+    assertTrue(true, "should be a throw");
+  }
 }

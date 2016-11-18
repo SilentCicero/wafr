@@ -74,6 +74,7 @@ ReportLog {
   status: 'success',     // or failure
   failure: 0,            // total method failure count
   success: 0,            // total method success count
+  order: [...]           // the order in which test methods were fired
   logs: {                // contract logs
     ContractLog {        // contract log object
       index: 0,

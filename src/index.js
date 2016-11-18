@@ -20,6 +20,7 @@ const getTimeIncreaseFromName = utils.getTimeIncreaseFromName;
 const increaseProviderTime = utils.increaseProviderTime; // eslint-disable-line
 const increaseProviderBlock = utils.increaseProviderBlock;
 const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
+const sortABIByMethodName = utils.sortABIByMethodName;
 const report = utils.report;
 const provider = TestRPC.provider({
   gasLimit: 99999999999999999999,
@@ -56,6 +57,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
     receipt: {},
     status: 'success',
     logs: [],
+    uncaughtThrow: false,
     startTime: ((new Date()).getTime()),
     duration: 0,
   };
@@ -73,6 +75,19 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       // compiling contracts
       if (methodReport.status === 'failure') {
         report(`     ${chalk.red(symbols.err)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
+
+        // if the log status is a failure log
+        if (methodReport.uncaughtThrow === true) {
+          report(`
+        -----------------
+
+        ${chalk.red('assertion failed (assertThrow)')}
+        index: no index
+        value (e): VM 'Invalid Jump',
+        value (a): TX success,
+        message: Expected method to throw causing VM 'Invalid Jump', method transacted without invalid jump.
+          `);
+        }
 
         // cycle through logs and report errors
         methodReport.logs.forEach((methodLog, methodLogIndex) => {
@@ -145,18 +160,27 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
           throwError(`error while testing method '${methodName}': ${methodError}`);
         }
       } else {
-        // transaction is success
-        getTransactionSuccess(web3, methodTxHash, (txSuccessError, txReceipt) => {
-          if (txSuccessError) {
-            throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
-          } else {
-            // if success, set the receipt
-            methodReport.receipt = txReceipt;
+        // if the method is expected to throw and doesn't, report failure
+        if (String(methodName.toLowerCase()).includes('throw')) {
+          methodReport.status = 'failure';
+          methodReport.uncaughtThrow = true;
+        }
 
-            // complete method processing
-            completeMethod();
-          }
-        });
+        // transaction is success
+        // set timeout to wait for log propigation
+        setTimeout(() => {
+          getTransactionSuccess(web3, methodTxHash, (txSuccessError, txReceipt) => {
+            if (txSuccessError) {
+              throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
+            } else {
+              // if success, set the receipt
+              methodReport.receipt = txReceipt;
+
+              // complete method processing
+              completeMethod();
+            }
+          });
+        }, 50);
       }
     });
   };
@@ -222,6 +246,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
     status: 'success',
     failure: 0,
     success: 0,
+    order: [],
     logs: {},
   };
 
@@ -251,7 +276,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
         // if contract result has deployed, run contract tests
         if (contractResult.address) {
           const contractResultObject = contractResult;
-          const testMethods = getTestMethodsFromABI(contractABI);
+          const testMethods = sortABIByMethodName(getTestMethodsFromABI(contractABI));
           const startIndex = 0;
           const initialTxObject = Object.assign({}, txObject);
           initialTxObject.from = accounts[1];
@@ -292,6 +317,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
             }
 
             // method logs
+            contractReport.order.push(methodLog.name);
             contractReport.logs[methodLog.name] = methodLog;
           };
 

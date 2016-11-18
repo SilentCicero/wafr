@@ -91,6 +91,11 @@ describe('run test ', () => {
         assert.equal(res.logs.BasicThrowTest.index, 0);
         assert.equal(typeof res.logs.BasicThrowTest.logs.test_basicThrow, 'object');
         assert.equal(typeof res.logs.BasicThrowTest.logs.test_basicWithAssertBeforeThrow, 'object');
+        assert.equal(res.logs.BasicThrowTest.logs.test_basicThrow.status, 'success');
+        assert.equal(res.logs.BasicThrowTest.logs.test_basicWithAssertBeforeThrow.status, 'success');
+        assert.equal(res.logs.BasicThrowTest.logs.test_basicWithTwoAssertAfterThrow.status, 'success');
+        assert.equal(res.logs.BasicThrowTest.logs.test_invalidThrow.status, 'failure');
+        assert.equal(res.logs.BasicThrowTest.logs.test_invalidThrowWithAsserts.status, 'failure');
         done();
       });
     });
@@ -115,6 +120,26 @@ describe('run test ', () => {
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
+        done();
+      });
+    });
+
+    it('method ordering should be sorted in order', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/methodOrdering',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[0], 'test_1_someTest');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[1], 'test_2_someTest');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[2], 'test_3_someTest');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[3], 'test_4_someTest');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[4], 'test_chain2_1_increaseTimeBy5000');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[5], 'test_chain2_2_increaseBlocksBy5');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[6], 'test_chain2_3');
+        assert.equal(res.logs.MethodOrderingByNumberTest.order[7], 'test_chain2_4');
         done();
       });
     });

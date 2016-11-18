@@ -5,17 +5,19 @@
 <div>
   <!-- Dependency Status -->
   <a href="https://david-dm.org/SilentCicero/wafr">
-    <img src="https://david-dm.org/SilentCicero/wafr.svg" alt="Dependency Status" />
+    <img src="https://david-dm.org/SilentCicero/wafr.svg"
+    alt="Dependency Status" />
   </a>
 
   <!-- devDependency Status -->
   <a href="https://david-dm.org/SilentCicero/wafr#info=devDependencies">
-    <img src="https://david-dm.org/SilentCicero/wafr/status.svg" alt="devDependency Status" />
+    <img src="https://david-dm.org/SilentCicero/wafr/dev-status.svg" alt="devDependency Status" />
   </a>
 
   <!-- Build Status -->
   <a href="https://travis-ci.org/SilentCicero/wafr">
-    <img src="https://travis-ci.org/SilentCicero/wafr.svg" alt="Build Status" />
+    <img src="https://travis-ci.org/SilentCicero/wafr.svg"
+    alt="Build Status" />
   </a>
 
   <!-- Test Coverage
@@ -26,7 +28,8 @@
 
   <!-- NPM Version -->
   <a href="https://www.npmjs.org/package/wafr">
-    <img src="http://img.shields.io/npm/v/wafr.svg" alt="NPM version" />
+    <img src="http://img.shields.io/npm/v/wafr.svg"
+    alt="NPM version" />
   </a>
 
   <!-- Javascript Style -->

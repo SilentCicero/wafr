@@ -163,6 +163,23 @@ function getTransactionSuccess(web3, hash, callback) {
   }, 100);
 }
 
+// sort test method array
+function compareABIByMethodName(methodObjectA, methodObjectB) {
+  if (methodObjectA.name < methodObjectB.name) {
+    return -1;
+  }
+
+  if (methodObjectA.name > methodObjectB.name) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function sortABIByMethodName(contractABI) {
+  return contractABI.sort(compareABIByMethodName);
+}
+
 // error enhancement, more information about bad errors
 function errorEnhancement(inputMessage) {
   var message = inputMessage; // eslint-disable-line
@@ -305,6 +322,7 @@ module.exports = {
   filterTestsFromOutput,
   buildTestContractsArray,
   getTransactionSuccess,
+  sortABIByMethodName,
   increaseProviderTime,
   errorEnhancement,
   increaseProviderBlock,

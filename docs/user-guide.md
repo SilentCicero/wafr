@@ -281,6 +281,34 @@ contract MyTest is Test {
 }
 ```
 
+## Ordering By Method Name
+
+Because there is no *guarantee or requirement* for any Ethereum compiler to generate the contract ABI array in order of how a contract is written. Wafr organizes the tests by name, this allows you to chain tests together in a predicatable order, regardless of how they are written in the contract.
+
+```
+pragma solidity ^0.4.4;
+
+import "wafr/Test.sol";
+
+contract MyTest is Test {
+  uint someValue = 5000;
+
+  function test_1_willTestFirst() {
+    assertTrue(true, "tested first");
+  }
+
+  function test_3_willTestThird() {
+    assertTrue(true, "will test third");
+  }
+
+  function test_2_willTestSecond() {
+    assertTrue(true, "will test second");
+  }
+}
+```
+
+Note, here `test_1_willTestFirst` will test first, then `test_2_willTestSecond`, then `test_3_willTestThird` and so on..
+
 ## CLI
 
 This is the current wafr CLI window `wafr --help`.
@@ -334,6 +362,7 @@ For example:
 9. Currently, the values shown in `wafr` are the `bytes32` equivalents of values or hashes (i.e. not `1` but `0x00...002d`), this may change in the future
 10. When using `assertEq`, dont use literal numbers, wrap them in `uint` or `int` (i.e. not `assertEq(1, 2);` but `assertEq(uint(1), uint(2));`)
 11. Wafr does not allow `../` in your `import` paths, it is only from the specified path up
+12. test methods are ordered by name or number, not how they are written in the contract
 
 ## Other Awesome Frameworks
 

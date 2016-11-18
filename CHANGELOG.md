@@ -1,3 +1,11 @@
+# 0.2.2 -- method ordering, chaining
+
+1. Test methods are now ordered by name to ensure chaining
+2. Fixed test method success status during uncaught `throw`
+3. More test coverage
+4. More doc examples
+5. Readme update
+
 # 0.2.1 -- add tx receipt to report
 
 1. Add tx receipt per method test for reporting
