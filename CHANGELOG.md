@@ -1,6 +1,8 @@
 # 0.2.4 -- type value convertion
 
 1. logs now have type value convertion for `uint`, `int`, `address`, `bool`, and shows type comparison
+2. More docs
+3. Adjustment to the `Test.sol` to support types
 
 # 0.2.3 -- TestRPC upgrade
 
