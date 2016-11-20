@@ -318,8 +318,9 @@ Usage
   $ wafr <path to contract test>
 
 Options
-  --help         the help CLI
-  --output, -o   solc compile output to JSON
+  --help         the help CLI menu
+  --output,  -o  solc compile output to JSON file
+  --stats,   -s  stats report output to JSON file
   --version, -v  the package verson number
 
 Examples
@@ -347,7 +348,9 @@ If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If 
 For example:
 `wafr ./contracts --output ./build/contracts.json`
 
-**Note, the new build JSON file is only created when tests have passed.**
+## Stats Output
+
+`wafr` allows you to output your complete stats report as a JSON file by using the `--stats` or `-s` flag in the CLI, followed by your desired JSON filename (i.e. `./stats.json`). This will output the complete stats report of the tests as a JSON file.
 
 ## Gotchas
 

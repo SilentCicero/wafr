@@ -130,7 +130,8 @@ Usage
 
 Options
   --help         the help CLI
-  --output, -o   solc compile output to JSON
+  --output,  -o  solc compile output to JSON file
+  --stats,   -s  stats report of tests to JSON file
   --version, -v  the package verson number
 
 Examples
