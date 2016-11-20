@@ -7,75 +7,6 @@ const exec = require('child_process').exec;
 
 describe('run test ', () => {
   describe('assertTrue', () => {
-    it('test CLI no path input', (done) => {
-      exec('node ./bin/wafr.js', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test CLI with path input', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test CLI with help', (done) => {
-      exec('node ./bin/wafr.js --help', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test CLI with version', (done) => {
-      exec('node ./bin/wafr.js --version', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test CLI with path input and invalid output path', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild', (execError) => { // eslint-disable-line
-        assert.equal(String(execError).includes('must be a JSON file'), true);
-        done();
-      });
-    });
-
-    it('test CLI with path input and valid output path', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/contracts.json', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test CLI with path input, invalid output and invalid stats', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/ --stats ./src/tests/testBuild/stats', (execError) => { // eslint-disable-line
-        assert.equal(String(execError).includes('must be a JSON file'), true);
-        done();
-      });
-    });
-
-    it('test CLI with path input, valid output and stats', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/contracts.json --stats ./src/tests/testBuild/stats.json', (execError) => { // eslint-disable-line
-        assert.equal(execError, null);
-        done();
-      });
-    });
-
-    it('test all tests, EPIC gas use testing', (done) => {
-      // run solTest
-      wafr({
-        path: './src/tests/solidityTests/gasUsage',
-        root: './',
-        optimize: 0,
-      }, (err, res) => {
-        assert.equal(err, null);
-        assert.equal(typeof res, 'object');
-        done();
-      });
-    });
-
     it('general assertTrue usage', (done) => {
       // run solTest
       wafr({
@@ -167,6 +98,75 @@ describe('run test ', () => {
         assert.equal(res.logs.BasicThrowTest.logs.test_basicWithTwoAssertAfterThrow.status, 'success');
         assert.equal(res.logs.BasicThrowTest.logs.test_invalidThrow.status, 'failure');
         assert.equal(res.logs.BasicThrowTest.logs.test_invalidThrowWithAsserts.status, 'failure');
+        done();
+      });
+    });
+
+    it('test CLI no path input', (done) => {
+      exec('node ./bin/wafr.js', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test CLI with path input', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test CLI with help', (done) => {
+      exec('node ./bin/wafr.js --help', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test CLI with version', (done) => {
+      exec('node ./bin/wafr.js --version', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test CLI with path input and invalid output path', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild', (execError) => { // eslint-disable-line
+        assert.equal(String(execError).includes('must be a JSON file'), true);
+        done();
+      });
+    });
+
+    it('test CLI with path input and valid output path', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/contracts.json', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test CLI with path input, invalid output and invalid stats', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/ --stats ./src/tests/testBuild/stats', (execError) => { // eslint-disable-line
+        assert.equal(String(execError).includes('must be a JSON file'), true);
+        done();
+      });
+    });
+
+    it('test CLI with path input, valid output and stats', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/boardroom --output ./src/tests/testBuild/contracts.json --stats ./src/tests/testBuild/stats.json', (execError) => { // eslint-disable-line
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test all tests, EPIC gas use testing', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/gasUsage',
+        root: './',
+        optimize: 0,
+      }, (err, res) => {
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
         done();
       });
     });

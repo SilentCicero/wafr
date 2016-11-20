@@ -105,6 +105,8 @@ ReportLog {
 };
 ```
 
+Note, this report can be outputed as a JSON file by using the `--stats ./path-to-your-file.json`. The output is generated when the report is complete after all tests have been processed.
+
 ## Module Usage
 
 Using the `wafr` module is as simple as requiring wafr and then handling the `options` and `callback` inputs. The `wafr` module is self-contained and doesn't use or interact with `fs` or `path` at all.
@@ -148,6 +150,9 @@ Here is what the wafr test console looks like when some tests pass and some fail
 
 The build output is handled in the `bin` folder. Where it does the work to use the `output` flag is provided, and writes an output build JSON file of the contracts to the specified paths.
 
+## Types
+
+Wafr compares the raw AssertEqLog bytes32 data, but displays the information as if it were not byte32 but it's original type. A conversion method is used `bytes32ToType` in order to convert the bytes32 log data into its native type.
 
 ## Tests
 
@@ -173,8 +178,7 @@ The main Solidity Test hardness used by wafr is included in the [`./src/lib/Test
 
 This contains the assertion methods, events, and a default setup method. As well it sets the fallback function to payable, so funds can be sent to the test contract upon construction.
 
-```
-pragma solidity ^0.4.4;
+```pragma solidity ^0.4.4;
 
 contract Test {
   function () payable {}
@@ -182,67 +186,75 @@ contract Test {
   function setup() {}
 
   function assertTrue(bool _testValue, string _message) {
-    AssertEqLog("AssertTrue", boolToBytes32(_testValue), boolToBytes32(true), _message);
+    AssertEqLog("AssertTrue", "bool", boolToBytes32(_testValue), boolToBytes32(true), _message);
   }
 
   function assertTrue(bool _testValue) {
-    AssertEqLog("AssertTrue", boolToBytes32(_testValue), boolToBytes32(true), "");
+    AssertEqLog("AssertTrue", "bool", boolToBytes32(_testValue), boolToBytes32(true), "");
   }
 
   function assertFalse(bool _testValue, string _message) {
-    AssertEqLog("AssertFalse", boolToBytes32(_testValue), boolToBytes32(false), _message);
+    AssertEqLog("AssertFalse", "bool", boolToBytes32(_testValue), boolToBytes32(false), _message);
   }
 
   function assertFalse(bool _testValue) {
-    AssertEqLog("AssertFalse", boolToBytes32(_testValue), boolToBytes32(false), "");
+    AssertEqLog("AssertFalse", "bool", boolToBytes32(_testValue), boolToBytes32(false), "");
   }
 
   function assertEq(uint _actual, uint _expected) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), "");
+    AssertEqLog("AssertEq", "uint", bytes32(_actual), bytes32(_expected), "");
+  }
+
+  function assertEq(bytes32 _actual, bytes32 _expected) {
+    AssertEqLog("AssertEq", "bytes32", _actual, _expected, "");
+  }
+
+  function assertEq(bytes32 _actual, bytes32 _expected, string _message) {
+    AssertEqLog("AssertEq", "bytes32", _actual, _expected, _message);
   }
 
   function assertEq(int _actual, int _expected) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), "");
+    AssertEqLog("AssertEq", "int", bytes32(_actual), bytes32(_expected), "");
   }
 
   function assertEq(int _actual, int _expected, string _message) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), _message);
+    AssertEqLog("AssertEq", "int", bytes32(_actual), bytes32(_expected), _message);
   }
 
   function assertEq(address _actual, address _expected) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), "");
+    AssertEqLog("AssertEq", "address", bytes32(_actual), bytes32(_expected), "");
   }
 
   function assertEq(bool _actual, bool _expected) {
-    AssertEqLog("AssertEq", boolToBytes32(_actual), boolToBytes32(_expected), "");
+    AssertEqLog("AssertEq", "bool", boolToBytes32(_actual), boolToBytes32(_expected), "");
   }
 
   function assertEq(uint _actual, uint _expected, string _message) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), _message);
+    AssertEqLog("AssertEq", "uint", bytes32(_actual), bytes32(_expected), _message);
   }
 
   function assertEq(address _actual, address _expected, string _message) {
-    AssertEqLog("AssertEq", bytes32(_actual), bytes32(_expected), _message);
+    AssertEqLog("AssertEq", "address", bytes32(_actual), bytes32(_expected), _message);
   }
 
   function assertEq(bool _actual, bool _expected, string _message) {
-    AssertEqLog("AssertEq", boolToBytes32(_actual), boolToBytes32(_expected), _message);
+    AssertEqLog("AssertEq", "bool", boolToBytes32(_actual), boolToBytes32(_expected), _message);
   }
 
   function assertEq(string _actual, string _expected) {
-    AssertEqLog("AssertEq", sha3(_actual), sha3(_expected), "");
+    AssertEqLog("AssertEq", "string", sha3(_actual), sha3(_expected), "");
   }
 
   function assertEq(string _actual, string _expected, string _message) {
-    AssertEqLog("AssertEq", sha3(_actual), sha3(_expected), _message);
+    AssertEqLog("AssertEq", "string", sha3(_actual), sha3(_expected), _message);
   }
 
   function assertEq(bytes _actual, bytes _expected) {
-    AssertEqLog("AssertEq", sha3(_actual), sha3(_expected), "");
+    AssertEqLog("AssertEq", "bytes", sha3(_actual), sha3(_expected), "");
   }
 
   function assertEq(bytes _actual, bytes _expected, string _message) {
-    AssertEqLog("AssertEq", sha3(_actual), sha3(_expected), "");
+    AssertEqLog("AssertEq", "bytes", sha3(_actual), sha3(_expected), "");
   }
 
   function boolToBytes32(bool _value) constant returns (bytes32) {
@@ -254,7 +266,7 @@ contract Test {
   }
 
   event log_uint(uint256 _logValue, string _message);
-  event AssertEqLog(string _type, bytes32 _actualValue, bytes32 _expectedValue, string _message);
+  event AssertEqLog(string _assertType, string _type, bytes32 _actualValue, bytes32 _expectedValue, string _message);
 }
 ```
 

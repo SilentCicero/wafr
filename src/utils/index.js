@@ -1,4 +1,5 @@
 const dir = require('node-dir');
+const ethUtil = require('ethereumjs-util');
 
 // function to handle throwing an errorin sol-test
 function throwError(error) {
@@ -75,6 +76,29 @@ function filterTestsFromOutput(sources) {
   });
 
   return outputObject;
+}
+
+const BN = require('bn.js');
+
+// bytes32 to number
+function bytes32ToInt(value) {
+  return (new BN(ethUtil.toBuffer(value))).toString(10);
+}
+
+// bytes32 to type
+function bytes32ToType(type, value) {
+  switch (type) {
+    case 'address':
+      return `0x${ethUtil.stripHexPrefix(value).slice(24)}`;
+    case 'bool':
+      return (ethUtil.stripHexPrefix(value).slice(63) === '1');
+    case 'int':
+      return bytes32ToInt(value);
+    case 'uint':
+      return bytes32ToInt(value);
+    default:
+      return value;
+  }
 }
 
 // return the extension of a filename as a string
@@ -346,6 +370,7 @@ module.exports = {
   getTestMethodsFromABI,
   report,
   log,
+  bytes32ToType,
   filterTestsFromOutput,
   buildTestContractsArray,
   getTransactionSuccess,

@@ -84,20 +84,6 @@ wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) 
     if (wafrResult.status === 'failure') {
       process.exit(1);
     } else {
-      // if there is an output path, build sources
-      /* if (typeof outputPath !== 'undefined') {
-        fs.writeFile(path.resolve(outputPath), JSON.stringify(utils.filterTestsFromOutput(wafrResult.contracts)), (writeFileError) => {
-          if (writeFileError) {
-            throw new Error(`while writting output JSON file ${outputPath}: ${writeFileError}`);
-          }
-
-          process.exit(0);
-        });
-      } else {
-        process.exit(0);
-      }
-      */
-
       writeContractsFile(outputPath, utils.filterTestsFromOutput(wafrResult.contracts), () => {
         writeStatsFile(statsPath, wafrResult, () => {
           process.exit(0);

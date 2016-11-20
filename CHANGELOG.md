@@ -1,3 +1,7 @@
+# 0.2.4 -- type value convertion
+
+1. logs now have type value convertion for `uint`, `int`, `address`, `bool`, and shows type comparison
+
 # 0.2.3 -- TestRPC upgrade
 
 1. Upgraded TestRPC from `3.0.1` to `3.0.2`

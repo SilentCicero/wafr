@@ -21,6 +21,7 @@ const increaseProviderTime = utils.increaseProviderTime; // eslint-disable-line
 const increaseProviderBlock = utils.increaseProviderBlock;
 const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
 const sortABIByMethodName = utils.sortABIByMethodName;
+const bytes32ToType = utils.bytes32ToType; // eslint-disable-line
 const report = utils.report;
 const provider = TestRPC.provider({
   gasLimit: 99999999999999999999,
@@ -83,8 +84,9 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 
         ${chalk.red('assertion failed (assertThrow)')}
         index: no index
-        value (e): VM 'Invalid Jump',
-        value (a): TX success,
+        type: throw
+        value (e): VM 'Invalid Jump'
+        value (a): TX success
         message: Expected method to throw causing VM 'Invalid Jump', method transacted without invalid jump.
           `);
         }
@@ -92,18 +94,20 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
         // cycle through logs and report errors
         methodReport.logs.forEach((methodLog, methodLogIndex) => {
           const message = methodLog.args._message; // eslint-disable-line
-          const actual = methodLog.args._actualValue; // eslint-disable-line
-          const expected = methodLog.args._expectedValue; // eslint-disable-line
+          const logType = methodLog.type;
+          const actual = bytes32ToType(logType, methodLog.args._actualValue); // eslint-disable-line
+          const expected = bytes32ToType(logType, methodLog.args._expectedValue); // eslint-disable-line
 
           // if the log status is a failure log
           if (methodLog.status === 'failure') {
             report(`
           -----------------
 
-          ${chalk.red(`assertion failed (${methodLog.type})`)}
+          ${chalk.red(`assertion failed (${methodLog.assertType})`)}
           index: ${methodLogIndex}
-          value (e): ${actual},
-          value (a): ${expected},
+          type: ${logType}
+          value (e): ${actual}
+          value (a): ${expected}
           message: ${message}
             `);
           }
@@ -134,6 +138,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       } else {
         // stash log
         methodReport.logs[assertEqLog.logIndex] = {
+          assertType: assertEqLog.args._assertType, // eslint-disable-line
           type: assertEqLog.args._type, // eslint-disable-line
           args: assertEqLog.args,
           logIndex: assertEqLog.logIndex,
