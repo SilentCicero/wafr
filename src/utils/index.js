@@ -77,6 +77,11 @@ function filterTestsFromOutput(sources) {
   return outputObject;
 }
 
+// return the extension of a filename as a string
+function filenameExtension(filename) {
+  return filename.substr(filename.lastIndexOf('.') + 1).toLowerCase();
+}
+
 // get all contract input sources
 function getInputSources(dirname, callback) {
   let filesRead = 0;
@@ -212,7 +217,29 @@ function errorEnhancement(inputMessage) {
 
   // if message includes
   if (message.includes('out of gas')) {
-    outputMessage = 'This shouldnt happen in wafr, but could be due to a TestRPC account being out of gas when either deploying your contracts or running a test or setup method. Please report this error in the wafr github issues.';
+    outputMessage = `This error can be due to various scenarios:
+
+    1. A error caused somewhere in your contract
+    2. An error with the EVM module (npm: 'ethereumjs-vm')
+    3. An error caused by the wafr module
+    4. An error with the node simulation module (npm: 'ethereumjs-testrpc')
+    5. A wafr account actually being out of gas
+
+    If you cannot resolve this issue with reasonable investigation,
+    report the error at:
+
+    http://github.com/SilentCicero/wafr/issues
+
+    If you believe the error is caused by the test node infrastructure,
+    report the error at:
+
+    http://github.com/ethereumjs/testrpc
+
+    If you believe the error is caused by the EVM module, report the error
+    at:
+
+    http://github.com/ethereumjs/ethereumjs-vm
+    `;
   }
 
   // return output message
@@ -326,6 +353,7 @@ module.exports = {
   increaseProviderTime,
   errorEnhancement,
   increaseProviderBlock,
+  filenameExtension,
   getTimeIncreaseFromName,
   getBlockIncreaseFromName,
 };

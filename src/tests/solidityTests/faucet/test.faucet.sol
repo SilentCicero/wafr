@@ -2,15 +2,15 @@ pragma solidity ^0.4.4;
 
 import "wafr/Test.sol";
 
-contract TestContract {
+contract FaucetTestContract {
   function () payable {}
 }
 
 contract FaucetTest is Test {
-  TestContract target;
+  FaucetTestContract target;
 
   function setup() {
-    target = new TestContract();
+    target = new FaucetTestContract();
   }
 
   function test_contractBalance() {

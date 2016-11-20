@@ -1,3 +1,15 @@
+# 0.2.3 -- TestRPC upgrade
+
+1. Upgraded TestRPC from `3.0.1` to `3.0.2`
+2. `package.json` -- Require npm version 3+ and node 6+
+3. More test coverage on gas usage
+4. Further error enhancements on `out of gas` errors
+5. Docker support
+6. Better CLI help/information error handling
+7. `--stats ./stats.json` -- output test report as JSON file
+8. Fix non-deterministic Invalid Jump from `ethereumjs-vm`
+9. CLI test coverage
+
 # 0.2.2 -- method ordering, chaining
 
 1. Test methods are now ordered by name to ensure chaining

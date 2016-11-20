@@ -2,5 +2,5 @@ pragma solidity ^0.4.4;
 
 import "wafr/Test.sol";
 
-contract TestContract is Test {
+contract EmptyTestContract is Test {
 }
