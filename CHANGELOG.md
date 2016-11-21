@@ -1,3 +1,8 @@
+# 0.2.5 -- stats file upgrades
+
+1. Generate stats file even under failure
+2. New lines in stats file
+
 # 0.2.4 -- type value convertion
 
 1. logs now have type value convertion for `uint`, `int`, `address`, `bool`, and shows type comparison

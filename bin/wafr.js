@@ -32,7 +32,7 @@ const statsPath = cli.flags.stats;
 
 // write contracts file
 function writeContractsFile(contractsFilePath, contractsObject, callback) { // eslint-disable-line
-  if (typeof contractsFilePath === 'undefined') {
+  if (typeof contractsFilePath !== 'string') {
     return callback();
   }
 
@@ -51,7 +51,7 @@ function writeContractsFile(contractsFilePath, contractsObject, callback) { // e
 
 // write stats file
 function writeStatsFile(statsFilePath, statsObject, callback) { // eslint-disable-line
-  if (typeof statsFilePath === 'undefined') {
+  if (typeof statsFilePath !== 'string') {
     return callback();
   }
 
@@ -59,7 +59,7 @@ function writeStatsFile(statsFilePath, statsObject, callback) { // eslint-disabl
     throw new Error('Your stats output file must be a JSON file (i.e. --stats ./stats.json)');
   }
 
-  fs.writeFile(path.resolve(statsFilePath), JSON.stringify(statsObject), (writeStatsFileError) => {
+  fs.writeFile(path.resolve(statsFilePath), JSON.stringify(statsObject, null, 2), (writeStatsFileError) => {
     if (writeStatsFileError) {
       throw new Error(`while writting stats JSON file ${statsFilePath}: ${writeStatsFileError}`);
     }
@@ -82,7 +82,9 @@ wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) 
   } else {
     // if status failure
     if (wafrResult.status === 'failure') {
-      process.exit(1);
+      writeStatsFile(statsPath, wafrResult, () => {
+        process.exit(1);
+      });
     } else {
       writeContractsFile(outputPath, utils.filterTestsFromOutput(wafrResult.contracts), () => {
         writeStatsFile(statsPath, wafrResult, () => {
