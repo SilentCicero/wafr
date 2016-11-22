@@ -1,8 +1,14 @@
+# 0.2.6 -- setup and teardown methods
+
+1. Added setup and teardown methods `beforeEach`, `afterEach`, `before_{}`, `after_{}`
+2. Added more user-docs
+3. More test coverage
+
 # 0.2.5 -- stats file upgrades
 
 1. Generate stats file even under failure
 2. New lines in stats file
-3. Removed web3 log/watching completely for better preformance and reliability
+3. Removed web3 log/watching completely for better performance and reliability
 
 # 0.2.4 -- type value convertion
 

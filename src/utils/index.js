@@ -50,8 +50,10 @@ function getTestMethodsFromABI(contractABI) {
 
   // if the method name has test in it, get object
   contractABI.forEach((methodABI, methodIndex) => {
-    if (typeof methodABI.name === 'string' &&
-      methodABI.name.includes('test')) {
+    if (typeof methodABI.name === 'string'
+      && methodABI.name.includes('test')
+      && methodABI.name.indexOf('before_') !== 0 // no before
+      && methodABI.name.indexOf('after_') !== 0) {
       testMethods.push(contractABI[methodIndex]);
     }
   });

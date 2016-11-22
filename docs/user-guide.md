@@ -281,6 +281,50 @@ contract MyTest is Test {
 }
 ```
 
+### Using before, beforeEach, after, afterEach
+
+wafr allows you to use various setup and teardown methods before and after your tests.
+Namely `beforeEach`, `afterEach`, `before_[test method name]` and `after_[test method name]`. `beforeEach` is fired before each method, while `afterEach` is fired after each method. `before_[test method name]` is fired before the specified method, while `after_[test method name]` is fired after the specified method is tested.
+
+```
+pragma solidity ^0.4.4;
+
+import "wafr/Test.sol";
+
+contract MyTest is Test {
+  uint someValue = 0;
+  uint anotherValue = 0;
+
+  function beforeEach() {
+    someValue = 3;
+  }
+
+  function afterEach() {
+    someValue = 0;
+  }
+
+  function before_test_method1() {
+    anotherValue = 8;
+  }
+
+  function test_method1() {
+    assertEq(someValue, uint(3), "some value should be 3");
+    assertEq(anotherValue, uint(8), "another value should be 8");
+  }
+
+  function after_test_method1() {
+    anotherValue = 2;
+  }
+
+  function test_method2() {
+    assertEq(someValue, uint(0), "some value should be 0");
+    assertEq(anotherValue, uint(2), "another value should be 2");
+  }
+}
+```
+
+Note, the fire ordering for setup and teardown methods are as follows: `beforeEach`, then `before_[test method name]` if any, then `[test method]`, then `after_[test method name]` if any, then `afterEach`. Setup is fired once before all of these methods.
+
 ## Ordering By Method Name
 
 Because there is no *guarantee or requirement* for any Ethereum compiler to generate the contract ABI array in order of how a contract is written. Wafr organizes the tests by name, this allows you to chain tests together in a predicatable order, regardless of how they are written in the contract.
@@ -307,7 +351,7 @@ contract MyTest is Test {
 }
 ```
 
-Note, here `test_1_willTestFirst` will test first, then `test_2_willTestSecond`, then `test_3_willTestThird` and so on..
+Note, here `test_1_willTestFirst` will test first, then `test_2_willTestSecond`, then `test_3_willTestThird` and so on.. This also goes for using `before_` and `after_` in specific test ordering and test chains.
 
 ## CLI
 
@@ -329,7 +373,7 @@ Examples
 
 ## Console
 
-Here is what the wafr test console looks like when some tests pass and some fail.
+Here is what the wafr test console looks like in action:
 
 <img src="https://github.com/SilentCicero/wafr/blob/master/assets/wafr-console.png?raw=true" width="600" />
 
@@ -337,7 +381,7 @@ Here is what the wafr test console looks like when some tests pass and some fail
 
 `wafr` builds your contracts from the specified `path` directory and below. It does not allow `../` in your `import` path.
 
-You cannot have `import "../../someContract.sol"`.
+**You cannot have `import "../../someContract.sol"`.**
 
 If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If you have files in `contracts` then you will want to set your base directory to `wafr ./contracts`.
 
@@ -348,9 +392,13 @@ If your CLI is `wafr ./contracts/tests` then your base directory is `tests`. If 
 For example:
 `wafr ./contracts --output ./build/contracts.json`
 
+**Note, the build output JSON file is only written to a file if all tests have passed**
+
 ## Stats Output
 
 `wafr` allows you to output your complete stats report as a JSON file by using the `--stats` or `-s` flag in the CLI, followed by your desired JSON filename (i.e. `./stats.json`). This will output the complete stats report of the tests as a JSON file.
+
+**Note, the stats.json file is written regardless of whether tests have passed or failed**
 
 ## Gotchas
 

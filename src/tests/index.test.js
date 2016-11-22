@@ -80,6 +80,24 @@ describe('run test ', () => {
       });
     });
 
+    it('should run beforeEach and afterEach properly around unit tests', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/beforeAfterEach',
+        optimize: 1,
+      }, (wafrError, res) => {
+        assert.equal(wafrError, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.logs.BeforeEachTest.status, 'success');
+        assert.equal(res.logs.BeforeEachTest.logs.test_validShouldBe3.logs.length, 1);
+        assert.equal(res.logs.AfterEachTest.status, 'success');
+        assert.equal(res.logs.AfterMethodTest.status, 'success');
+        assert.equal(res.logs.BeforeMethodTest.status, 'success');
+        assert.equal(res.logs.AfterEachTest.logs.test_1_validShouldBe5.logs.length, 1);
+        done();
+      });
+    });
+
     it('should run basic throw tests without stopping', (done) => {
       // run solTest
       wafr({

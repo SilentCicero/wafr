@@ -69,6 +69,48 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
     // assert true log
     const assertEqLogEvent = contractObject.AssertEqLog({}, {}); // eslint-disable-line
 
+    // fire after each method
+    const afterEachMethod = () => {
+      contractObject.afterEach(Object.assign({}, methodTxObject), (afterEachError, afterEachTxHash) => {
+        if (afterEachError) {
+          throwError(`while firing afterEach method after method ${methodName}: ${afterEachError}`);
+        } else {
+          getTransactionSuccess(web3, afterEachTxHash, (txSuccessError) => {
+            if (txSuccessError) {
+              throwError(`error while getting transaction method success for afterEach method after '${methodName}': ${txSuccessError}`);
+            } else {
+              completeMethod();
+            }
+          });
+        }
+      });
+    };
+
+    // setup fire test method after testing it
+    const setupCompleteMethod = () => {
+      // if after method available, fire it
+      if (typeof contractObject[`after_${methodName}`] === 'function') {
+        // before each
+        contractObject[`after_${methodName}`](Object.assign({}, methodTxObject), (afterError, afterTxHash) => {
+          if (afterError) {
+            throwError(`while firing before_${methodName} after method ${methodName}: ${afterError}`);
+          } else {
+            getTransactionSuccess(web3, afterTxHash, (txSuccessError) => {
+              if (txSuccessError) {
+                throwError(`error while getting transaction method success for method 'after_${methodName}' before method '${methodName}': ${txSuccessError}`);
+              } else {
+                // fire after each method, then complete test
+                afterEachMethod();
+              }
+            });
+          }
+        });
+      } else {
+        // complete afterEach method then complete test
+        afterEachMethod();
+      }
+    };
+
     // complte out method, no errors
     const completeMethod = () => {
       // calculate duration
@@ -154,7 +196,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       if (methodError) {
         if (String(methodName.toLowerCase()).includes('throw')
         && JSON.stringify(methodError.message).includes('JUMP')) {
-          completeMethod();
+          setupCompleteMethod();
         } else {
           throwError(`error while testing method '${methodName}': ${methodError}`);
         }
@@ -236,7 +278,7 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
             }
 
             // complete method processing
-            completeMethod();
+            setupCompleteMethod();
           }
         });
       }
@@ -247,30 +289,71 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
   const timeIncrease = getTimeIncreaseFromName(methodName);
   const blockIncrease = getBlockIncreaseFromName(methodName);
 
-  // if there is an increase time command
-  // then increase the time and mine a block
-  if (timeIncrease > 0) {
-    increaseProviderTime(provider, timeIncrease, (increaseTimeError) => {
-      if (increaseTimeError) {
-        throwError(`error while increasing TestRPC provider time by ${timeIncrease} seconds: ${increaseTimeError}`);
-      } else {
-        fireTestMethod();
-      }
-    });
-  } else {
-    if (blockIncrease > 0) {
-      increaseProviderBlock(provider, blockIncrease, (increaseBlockError) => {
-        if (increaseBlockError) {
-          throwError(`error while increasing TestRPC provider by ${blockIncrease} blocks: ${increaseBlockError}`);
+  // setup fire test method before testing it
+  const setupTestMethod = () => {
+    // if there is an increase time command
+    // then increase the time and mine a block
+    if (timeIncrease > 0) {
+      increaseProviderTime(provider, timeIncrease, (increaseTimeError) => {
+        if (increaseTimeError) {
+          throwError(`error while increasing TestRPC provider time by ${timeIncrease} seconds: ${increaseTimeError}`);
         } else {
           fireTestMethod();
         }
       });
     } else {
-      // fire the test method
-      fireTestMethod();
+      if (blockIncrease > 0) {
+        increaseProviderBlock(provider, blockIncrease, (increaseBlockError) => {
+          if (increaseBlockError) {
+            throwError(`error while increasing TestRPC provider by ${blockIncrease} blocks: ${increaseBlockError}`);
+          } else {
+            fireTestMethod();
+          }
+        });
+      } else {
+        // fire the test method
+        fireTestMethod();
+      }
     }
-  }
+  };
+
+  // fire before method
+  const fireBeforeMethod = () => {
+    // before each
+    contractObject[`before_${methodName}`](Object.assign({}, methodTxObject), (beforeError, beforeTxHash) => {
+      if (beforeError) {
+        throwError(`while firing before_${methodName} before method ${methodName}: ${beforeError}`);
+      } else {
+        getTransactionSuccess(web3, beforeTxHash, (txSuccessError) => {
+          if (txSuccessError) {
+            throwError(`error while getting transaction method success for before_${methodName} method before '${methodName}': ${txSuccessError}`);
+          } else {
+            setupTestMethod();
+          }
+        });
+      }
+    });
+  };
+
+  // before each
+  contractObject.beforeEach(Object.assign({}, methodTxObject), (beforeEachError, beforeEachTxHash) => {
+    if (beforeEachError) {
+      throwError(`while firing beforeEach method before method ${methodName}: ${beforeEachError}`);
+    } else {
+      getTransactionSuccess(web3, beforeEachTxHash, (txSuccessError) => {
+        if (txSuccessError) {
+          throwError(`error while getting transaction method success for beforeEach method before '${methodName}': ${txSuccessError}`);
+        } else {
+          // if before method available, fire it
+          if (typeof contractObject[`before_${methodName}`] === 'function') {
+            fireBeforeMethod();
+          } else {
+            setupTestMethod();
+          }
+        }
+      });
+    }
+  });
 }
 
 // test each contract one after the other

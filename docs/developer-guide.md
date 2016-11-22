@@ -150,15 +150,31 @@ Here is what the wafr test console looks like when some tests pass and some fail
 
 The build output is handled in the `bin` folder. Where it does the work to use the `output` flag is provided, and writes an output build JSON file of the contracts to the specified paths.
 
+## Ordering the firing of setup and teardown methods
+
+Wafr includes setup and teardown methods. If a specific teardown or setup method is notated for a specific method, it will be called.
+
+The firing order:
+ 1. `setup`
+ 2. `beforeEach`
+ 3. `before_[test method name]`
+ 4. `[test method name]`
+ 5. `after_[test method name]`
+ 6. `afterEach`
+
 ## Types
 
-Wafr compares the raw AssertEqLog bytes32 data, but displays the information as if it were not byte32 but it's original type. A conversion method is used `bytes32ToType` in order to convert the bytes32 log data into its native type.
+Wafr compares the raw AssertEqLog bytes32 data, but displays the information as if it were not byte32 but it's original type. A conversion method is used `bytes32ToType` in order to convert the bytes32 log data into its native type for display.
 
 ## Tests
 
 The `wafr` testing hardness has several test cases instantiated in the `./src/tests/` dir. `wafr` is tested by running various test solidity contracts, then based on the output report, determines if it tests properly. Please feel free to add more coverage here and include the main tests in the `./src/tests/index.test.js`.
 
 Note, dont be afraid of all the failing tests, they are suppose to fail to check the accuracy of the `assert` methods.
+
+## Bulky ./src/index.js file
+
+Write now the design of wafr is subpar as all the action happens in the index.js file. This will be broken out eventually into smaller methods and a more robust design.
 
 ## Bin
 

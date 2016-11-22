@@ -4,6 +4,8 @@ contract Test {
   function () payable {}
 
   function setup() {}
+  function beforeEach() {}
+  function afterEach() {}
 
   function assertTrue(bool _testValue, string _message) {
     AssertEqLog("AssertTrue", "bool", boolToBytes32(_testValue), boolToBytes32(true), _message);
