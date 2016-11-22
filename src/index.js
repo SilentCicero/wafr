@@ -8,6 +8,7 @@ const solc = require('solc');
 const utils = require('./utils/index.js');
 const chalk = require('chalk');
 const testContract = require('./lib/Test.sol.js');
+const Interface = require('ethers-wallet').Interface;
 const throwError = utils.throwError;
 const symbols = utils.symbols;
 const log = utils.log;
@@ -73,6 +74,25 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       // calculate duration
       methodReport.duration = ((new Date()).getTime()) - methodReport.startTime;
 
+      // report all non comparison logs
+      methodReport.logs.forEach((methodLog, methodLogIndex) => {
+        // if it is not a comparison log
+        if (methodLog.comparison === false) {
+          const message = methodLog.args._message; // eslint-disable-line
+          const logValue = methodLog.args._logValue; // eslint-disable-line
+
+          // report uint log
+          report(`
+        -----------------
+
+        ${chalk.green('log uint256 value')}
+        index: ${methodLogIndex}
+        value: ${logValue}
+        message: ${message}
+          `);
+        }
+      });
+
       // compiling contracts
       if (methodReport.status === 'failure') {
         report(`     ${chalk.red(symbols.err)} ${chalk.dim(methodName)} ${chalk.red(`(${methodReport.duration}ms)`)}`);
@@ -95,11 +115,12 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
         methodReport.logs.forEach((methodLog, methodLogIndex) => {
           const message = methodLog.args._message; // eslint-disable-line
           const logType = methodLog.type;
-          const actual = bytes32ToType(logType, methodLog.args._actualValue); // eslint-disable-line
-          const expected = bytes32ToType(logType, methodLog.args._expectedValue); // eslint-disable-line
 
           // if the log status is a failure log
-          if (methodLog.status === 'failure') {
+          if (methodLog.comparison === true && methodLog.status === 'failure') {
+            const actual = bytes32ToType(logType, methodLog.args._actualValue); // eslint-disable-line
+            const expected = bytes32ToType(logType, methodLog.args._expectedValue); // eslint-disable-line
+
             report(`
           -----------------
 
@@ -121,39 +142,12 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 
       // new index is less than length
       if (nextIndex < testMethods.length) {
-        assertEqLogEvent.stopWatching();
-
         runTestMethodsSeq(nextIndex, testMethods, contractObject, nextContract, nextMethod);
       } else {
         // Test contract is complete
         nextContract();
       }
     };
-
-    // watch for log
-    assertEqLogEvent.watch((assertEqLogError, assertEqLog) => {
-      // handle error
-      if (assertEqLogError) {
-        throwError(`error while listening for assertEqLog ${assertEqLogError}`);
-      } else {
-        // stash log
-        methodReport.logs[assertEqLog.logIndex] = {
-          assertType: assertEqLog.args._assertType, // eslint-disable-line
-          type: assertEqLog.args._type, // eslint-disable-line
-          args: assertEqLog.args,
-          logIndex: assertEqLog.logIndex,
-          status: 'success',
-        };
-
-        // if actual does not equal expected, mark as failure, report error
-        if (assertEqLog.args._actualValue !== assertEqLog.args._expectedValue) { // eslint-disable-line
-          methodReport.status = 'failure';
-          methodReport.logs[assertEqLog.logIndex].status = 'failure';
-          assertEqLogEvent.stopWatching();
-          return;
-        }
-      }
-    });
 
     contractObject[methodName](methodTxObject, (methodError, methodTxHash) => {
       // has method error
@@ -173,19 +167,78 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
 
         // transaction is success
         // set timeout to wait for log propigation
-        setTimeout(() => {
-          getTransactionSuccess(web3, methodTxHash, (txSuccessError, txReceipt) => {
-            if (txSuccessError) {
-              throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
-            } else {
-              // if success, set the receipt
-              methodReport.receipt = txReceipt;
+        getTransactionSuccess(web3, methodTxHash, (txSuccessError, txReceipt) => {
+          if (txSuccessError) {
+            throwError(`error while getting transaction success method '${methodName}': ${methodError}`);
+          } else {
+            // if success, set the receipt
+            methodReport.receipt = txReceipt;
 
-              // complete method processing
-              completeMethod();
+            // if the receipt has logs
+            if (txReceipt.logs.length > 0) {
+              // go through logs, find AssertEq logs
+              for (var logIndex = 0; logIndex < txReceipt.logs.length; logIndex++) { // eslint-disable-line
+                // if log is a uint log `log_uint`
+                if (txReceipt.logs[logIndex].topics.includes('0x5a71b4cb8bb5bc53d31d782572a043ec542e2d000214f85ace0bbe93131dc98a')) {
+                  // decode the log data
+                  const logData = Interface.decodeParams(['uint256', 'string'], txReceipt.logs[logIndex].data);
+
+                  // build a log object similar to web3
+                  const logDataObject = {
+                    _logValue: logData[0],
+                    _message: logData[1],
+                  };
+
+                  // log value, log message
+                  const logValue = logDataObject._logValue; // eslint-disable-line
+                  const logMessage = logDataObject._message; // eslint-disable-line
+
+                  // report log data if necessary
+                  methodReport.logs[logIndex] = {
+                    comparison: false,
+                    type: 'uint256',
+                    args: logDataObject,
+                    logIndex,
+                  };
+                }
+
+                // if the log is an AssertEq log
+                if (txReceipt.logs[logIndex].topics.includes('0xd59a9828799793dbbfb45a334a81ebcf5a204d2ff45f7ee7561756b5d2d3c4b2')) {
+                  // decode the log data
+                  const logData = Interface.decodeParams(['string', 'string', 'bytes32', 'bytes32', 'string'], txReceipt.logs[logIndex].data);
+
+                  // build a log object similar to web3
+                  const logDataObject = {
+                    _assertType: logData[0],
+                    _type: logData[1],
+                    _actualValue: logData[2],
+                    _expectedValue: logData[3],
+                    _message: logData[4],
+                  };
+
+                  // report log data if necessary
+                  methodReport.logs[logIndex] = {
+                    comparison: true,
+                    assertType: logDataObject._assertType, // eslint-disable-line
+                    type: logDataObject._type, // eslint-disable-line
+                    args: logDataObject,
+                    logIndex,
+                    status: 'success',
+                  };
+
+                  // if actual does not equal expected, mark as failure, report error
+                  if (logDataObject._actualValue !== logDataObject._expectedValue) { // eslint-disable-line
+                    methodReport.status = 'failure';
+                    methodReport.logs[logIndex].status = 'failure';
+                  }
+                }
+              }
             }
-          });
-        }, 50);
+
+            // complete method processing
+            completeMethod();
+          }
+        });
       }
     });
   };
@@ -288,28 +341,6 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           initialTxObject.value = contractBalance;
           initialTxObject.to = contractResultObject.address;
           const setupTxObject = Object.assign({}, txObject);
-
-          // setup uint log event
-          const uintLogEvent = contractResultObject.log_uint({}, {}); // eslint-disable-line
-
-          // watch for uint log
-          uintLogEvent.watch((uintLogEventError, logEventResult) => {
-            if (uintLogEventError) {
-              throwError(`while listening for uint log event: ${uintLogEventError}`);
-            } else {
-              const logValue = logEventResult.args._logValue; // eslint-disable-line
-              const logMessage = logEventResult.args._message; // eslint-disable-line
-
-              report(`
-          -----------------
-
-          ${chalk.green('uint log fired')}
-          index: ${logEventResult.logIndex}
-          value: ${logValue},
-          message: ${logMessage}
-          `);
-            }
-          });
 
           // next method method
           const nextMethod = (methodLog) => {

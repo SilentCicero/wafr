@@ -2,6 +2,7 @@
 
 1. Generate stats file even under failure
 2. New lines in stats file
+3. Removed web3 log/watching completely for better preformance and reliability
 
 # 0.2.4 -- type value convertion
 
