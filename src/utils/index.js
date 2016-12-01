@@ -69,16 +69,19 @@ function getTestMethodsFromABI(contractABI) {
 }
 
 // if the filename is not test like
+/*
 function nonTestFileName(filename) {
   return !filename.toLowerCase().includes('test');
 }
+*/
 
 // get all non-test files from build sources
 function filterTestsFromOutput(sources) {
   const outputObject = {};
 
   Object.keys(sources).forEach((sourceName) => {
-    if (nonTestFileName(sourceName)) {
+    const contractInterface = JSON.parse(sources[sourceName].interface);
+    if (!contractInterface.some(includesSomeAssertLogEvent)) {
       outputObject[sourceName] = Object.assign({}, sources[sourceName]);
     }
   });

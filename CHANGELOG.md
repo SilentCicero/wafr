@@ -1,3 +1,7 @@
+# 0.2.8 -- fix edge `test case naming`
+
+1. More edge case fixing for naming policy on output build staging
+
 # 0.2.7 -- fix edge `test case naming`
 
 1. Removed the `test` like naming policy, contracts are now Tests if they have specific ABI requirements
