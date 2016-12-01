@@ -2,11 +2,24 @@ const assert = require('chai').assert;
 const wafr = require('../index.js');
 const bytes32True = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const bytes32False = '0x0000000000000000000000000000000000000000000000000000000000000000';
+// const utils = require('../utils/index.js');
 
 const exec = require('child_process').exec;
 
 describe('run test ', () => {
   describe('assertTrue', () => {
+    it('compile contracts with no tests, just contracts', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/onlyContractsNoTests',
+        optimize: 1,
+      }, (err, res) => {
+        assert.equal(err, null);
+        assert.equal(Object.keys(res.contracts).length, 4);
+        done();
+      });
+    });
+
     it('general assertTrue usage', (done) => {
       // run solTest
       wafr({

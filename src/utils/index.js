@@ -24,6 +24,11 @@ function report(message) {
   console.log(message); // eslint-disable-line
 }
 
+// includes assert method
+function includesSomeAssertLogEvent(element) {
+  return (typeof element === 'object' && element.type === 'event' && element.name === 'AssertEqLog');
+}
+
 // build test contracts array
 // all contracts in input that ares Tests, run
 function buildTestContractsArray(contractsInput) {
@@ -32,8 +37,9 @@ function buildTestContractsArray(contractsInput) {
 
   // contracts
   for (var contractName in contracts) { // eslint-disable-line
-    if (contractName !== 'Test'
-      && contractName.toLowerCase().includes('test')) {
+    const contractInterface = JSON.parse(contracts[contractName].interface);
+    if (contractName !== 'Test' &&
+      contractInterface.some(includesSomeAssertLogEvent)) {
       contracts[contractName].name = contractName;
       testContracts.push(contracts[contractName]);
     }

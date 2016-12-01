@@ -1,3 +1,7 @@
+# 0.2.7 -- fix edge `test case naming`
+
+1. Removed the `test` like naming policy, contracts are now Tests if they have specific ABI requirements
+
 # 0.2.6 -- setup and teardown methods
 
 1. Added setup and teardown methods `beforeEach`, `afterEach`, `before_{}`, `after_{}`

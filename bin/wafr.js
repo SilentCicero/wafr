@@ -9,7 +9,7 @@ const wafr = require('../src/index.js');
 // handle cli
 const cli = meow(`
     Usage
-      $ wafr <path to contract test>
+      $ wafr <path to contracts>
 
     Options
       --help         the help CLI
@@ -17,7 +17,7 @@ const cli = meow(`
       --output,  -o  solc compile output to a JSON file
       --version, -v  the package verson number
 
-    Examples
+    Example
       $ wafr ./contracts --output ./build/contracts.json
 `, {
   alias: {
