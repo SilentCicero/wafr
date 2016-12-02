@@ -1,3 +1,7 @@
+# 0.2.9 -- turn solc optimizer on or off
+
+1. Turn solc optimizer on or off `--optimize` either `1` or `0`
+
 # 0.2.8 -- fix edge `test case naming`
 
 1. More edge case fixing for naming policy on output build staging

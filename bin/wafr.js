@@ -12,10 +12,11 @@ const cli = meow(`
       $ wafr <path to contracts>
 
     Options
-      --help         the help CLI
-      --stats,   -s  output the stats report to a JSON file
-      --output,  -o  solc compile output to a JSON file
-      --version, -v  the package verson number
+      --help           the help CLI
+      --optimize -op   turn solc optimizer on or off
+      --stats,   -s    output the stats report to a JSON file
+      --output,  -o    solc compile output to a JSON file
+      --version, -v    the package verson number
 
     Example
       $ wafr ./contracts --output ./build/contracts.json
@@ -23,12 +24,14 @@ const cli = meow(`
   alias: {
     s: 'stats',
     o: 'output',
+    op: 'optimize',
   },
 });
 
 // output path
 const outputPath = cli.flags.output;
 const statsPath = cli.flags.stats;
+const solcOptimize = parseInt((cli.flags.optimize || 1), 10);
 
 // write contracts file
 function writeContractsFile(contractsFilePath, contractsObject, callback) { // eslint-disable-line
@@ -73,7 +76,7 @@ if (typeof cli.input[0] === 'undefined') {
 }
 
 // the main wafr code to run
-wafr({ path: path.resolve(cli.input[0]), optimize: 1 }, (wafrError, wafrResult) => {
+wafr({ path: path.resolve(cli.input[0]), optimize: solcOptimize }, (wafrError, wafrResult) => {
   if (wafrError) {
     throw new Error(`error while running wafr CLI: ${wafrError}`);
 

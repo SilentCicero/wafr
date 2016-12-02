@@ -1,6 +1,6 @@
 {
   "name": "wafr",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A super simple test harness for Solidity smart-contracts.",
   "scripts": {
     "start": "npm test",
@@ -8,7 +8,7 @@
     "nodejscheckversion": "node ./internals/scripts/nodejscheckversion.js",
     "test": "mocha src/tests/**/*.js -R spec --timeout 2000000",
     "test:util": "mocha src/utils/tests/**/*.js -R spec --timeout 2000000",
-    "example": "node ./bin/wafr.js ./example/",
+    "example": "node ./bin/wafr.js ./example/ --optimize 0",
     "release": "npmpub",
     "pretest": "npm run lint",
     "lint": "npm run lint:js",
