@@ -123,8 +123,8 @@ function filenameInclude(filename, exclude, include) { // eslint-disable-line
   var output = true; // eslint-disable-line
 
   if (exclude) {
-    if (globToRegExp(exclude).test(filename)
-    && !globToRegExp(include || '').test(filename)) {
+    if (globToRegExp(exclude, { extended: true }).test(filename)
+    && !globToRegExp(include || '', { extended: true }).test(filename)) {
       output = false;
     }
   }
