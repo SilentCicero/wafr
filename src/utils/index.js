@@ -1,5 +1,6 @@
 const dir = require('node-dir');
 const ethUtil = require('ethereumjs-util');
+const globToRegExp = require('glob-to-regexp');
 
 // function to handle throwing an errorin sol-test
 function throwError(error) {
@@ -117,8 +118,22 @@ function filenameExtension(filename) {
   return filename.substr(filename.lastIndexOf('.') + 1).toLowerCase();
 }
 
+// returns true if the filename should be included
+function filenameInclude(filename, exclude, include) { // eslint-disable-line
+  var output = true; // eslint-disable-line
+
+  if (exclude) {
+    if (globToRegExp(exclude).test(filename)
+    && !globToRegExp(include || '').test(filename)) {
+      output = false;
+    }
+  }
+
+  return output;
+}
+
 // get all contract input sources
-function getInputSources(dirname, callback) {
+function getInputSources(dirname, exclude, include, callback) {
   let filesRead = 0;
   const sources = {};
 
@@ -145,6 +160,7 @@ function getInputSources(dirname, callback) {
 
         // add input sources to output
         if (filename.substr(filename.lastIndexOf('.') + 1) === 'sol'
+          && filenameInclude(filename, exclude, include)
           && onlyFilename.charAt(0) !== '~'
           && onlyFilename.charAt(0) !== '#'
           && onlyFilename.charAt(0) !== '.') {
@@ -377,6 +393,7 @@ module.exports = {
   symbols,
   throwError,
   contractIsTest,
+  filenameInclude,
   getInputSources,
   getTestMethodsFromABI,
   report,

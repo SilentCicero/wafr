@@ -14,6 +14,8 @@ const cli = meow(`
     Options
       --help           the help CLI
       --optimize -op   turn solc optimizer on or off
+      --exclude  -e    exclude specific files from compiling (REGEX e.g. 'test.something.**.sol')
+      --include  -i    negates files excluded (REGEX e.g. 'test.Balanace**')
       --stats,   -s    output the stats report to a JSON file
       --output,  -o    solc compile output to a JSON file
       --version, -v    the package verson number
@@ -24,13 +26,17 @@ const cli = meow(`
   alias: {
     s: 'stats',
     o: 'output',
+    i: 'incude',
+    e: 'exclude',
     op: 'optimize',
   },
 });
 
-// output path
+// flag handling
 const outputPath = cli.flags.output;
 const statsPath = cli.flags.stats;
+const solcInclude = cli.flags.include || null;
+const solcExclude = cli.flags.exclude || null;
 const solcOptimize = parseInt((cli.flags.optimize || 1), 10);
 
 // write contracts file
@@ -76,7 +82,12 @@ if (typeof cli.input[0] === 'undefined') {
 }
 
 // the main wafr code to run
-wafr({ path: path.resolve(cli.input[0]), optimize: solcOptimize }, (wafrError, wafrResult) => {
+wafr({
+  path: path.resolve(cli.input[0]),
+  optimize: solcOptimize,
+  exclude: solcExclude,
+  include: solcInclude,
+}, (wafrError, wafrResult) => {
   if (wafrError) {
     throw new Error(`error while running wafr CLI: ${wafrError}`);
 

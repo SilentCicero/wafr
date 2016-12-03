@@ -1,3 +1,8 @@
+# 0.3.0 -- exclude and include features
+
+1. `--exclude` specific contracts from compiling and testing (e.g. Glob REGEX '**test.something**.sol')
+1. `--include` negates excluded contracts (e.g. Glob REGEX '**/test.**.sol')
+
 # 0.2.9 -- turn solc optimizer on or off
 
 1. Turn solc optimizer on or off `--optimize` either `1` or `0`

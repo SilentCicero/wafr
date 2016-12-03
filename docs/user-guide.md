@@ -359,15 +359,18 @@ This is the current wafr CLI window `wafr --help`.
 
 ```
 Usage
-  $ wafr <path to contract test>
+  $ wafr <path to contracts>
 
 Options
-  --help         the help CLI menu
-  --output,  -o  solc compile output to JSON file
-  --stats,   -s  stats report output to JSON file
-  --version, -v  the package verson number
+  --help           the help CLI
+  --optimize -op   turn solc optimizer on or off
+  --exclude  -e    exclude specific files from compiling (REGEX e.g. 'test.something.**.sol')
+  --include  -i    negates files excluded (REGEX e.g. 'test.Balanace**')
+  --stats,   -s    output the stats report to a JSON file
+  --output,  -o    solc compile output to a JSON file
+  --version, -v    the package verson number
 
-Examples
+Example
   $ wafr ./contracts --output ./build/contracts.json
 ```
 

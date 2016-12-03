@@ -494,6 +494,8 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
 function wafr(options, callback) {
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
+  const sourcesExclude = options.exclude;
+  const sourcesInclude = options.include;
   const reportLogs = {
     contracts: {},
     status: 'success',
@@ -503,7 +505,7 @@ function wafr(options, callback) {
   };
 
   // get allinput sources
-  getInputSources(contractsPath, (inputError, sources) => {
+  getInputSources(contractsPath, sourcesExclude, sourcesInclude, (inputError, sources) => {
     if (inputError) {
       throwError(`while getting input sources: ${inputError}`);
     }

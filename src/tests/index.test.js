@@ -8,6 +8,56 @@ const exec = require('child_process').exec;
 
 describe('run test ', () => {
   describe('assertTrue', () => {
+    it('test exclude on the CLI with include option', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --exclude **Another**.sol --include **test.AnotherSomething**  --output ./src/tests/testBuild/excludeContracts.json', (execError) => { // eslint-disable-line
+        const contractsOutput = require('./testBuild/excludeContracts.json'); // eslint-disable-line
+        assert.equal(Object.keys(contractsOutput).length, 1); // including Test contract
+        assert.deepEqual(Object.keys(contractsOutput), ['Something']);
+        assert.equal(execError, null);
+        done();
+      });
+    });
+
+    it('test exclude on the CLI', (done) => {
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --exclude **test.**.sol --output ./src/tests/testBuild/excludeContracts2.json', (execError) => { // eslint-disable-line
+        const contractsOutput = require('./testBuild/excludeContracts2.json'); // eslint-disable-line
+
+        assert.equal(execError, null);
+        assert.equal(Object.keys(contractsOutput).length, 2); // including Test contract
+        assert.deepEqual(Object.keys(contractsOutput), ['Another', 'Something']); // including Test contract
+
+        done();
+      });
+    });
+
+    it('should exclude specific contracts from compile and testing', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/excludeTest',
+        optimize: 1,
+        exclude: '**test.**.sol',
+      }, (err, res) => {
+        assert.equal(err, null);
+        assert.equal(Object.keys(res.contracts).length, 3); // including Test contract
+        assert.deepEqual(Object.keys(res.contracts), ['Another', 'Something', 'Test']); // including Test contract
+        done();
+      });
+    });
+
+    it('should exclude specific contracts but include a single specific one', (done) => {
+      // run solTest
+      wafr({
+        path: './src/tests/solidityTests/excludeTest',
+        optimize: 1,
+        exclude: '**test.**.sol',
+        include: '**test.Another.**',
+      }, (err, res) => {
+        assert.equal(err, null);
+        assert.equal(Object.keys(res.contracts).length, 4); // including Test contract
+        done();
+      });
+    });
+
     it('compile contracts with no tests, just contracts', (done) => {
       // run solTest
       wafr({

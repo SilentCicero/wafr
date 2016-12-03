@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const util = require('../index.js');
 const bytes32ToType = util.bytes32ToType;
+const filenameInclude = util.filenameInclude;
 const bytes32BoolTrue = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const bytes32BoolFalse = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const bytes32UintValue2 = '0x00000000000000000000000000000000000000000000000000000000164aedc3';
@@ -40,6 +41,65 @@ describe('test wafr utils', () => {
       assert.equal(bytes32ToType('bytes', bytes32BoolFalse), bytes32BoolFalse);
       assert.equal(bytes32ToType('address', bytes32Address1), address1);
       assert.equal(bytes32ToType('address', bytes32Address2), address2);
+    });
+  });
+
+  describe('filenameInclude', () => {
+    const filenames = [
+      './contracts',
+      './contracts/another/tests/test.AnotherThing.sol',
+      './contracts/another/AnotherThing.sol',
+      './contracts/tests/test.Something.sol',
+      './contracts/tests/test.SomethingElse.sol',
+      './contracts/Something.sol',
+    ];
+
+    it('should exclude no files if exclude is null', () => {
+      const testSources = [];
+
+      filenames.forEach((filename) => {
+        if (filenameInclude(filename)) {
+          testSources.push(filename);
+        }
+      });
+
+      assert.equal(filenames.length, testSources.length);
+    });
+
+    it('should exclude only test files', () => {
+      const testSources = [];
+
+      filenames.forEach((filename) => {
+        if (filenameInclude(filename, '**/test.**')) {
+          testSources.push(filename);
+        }
+      });
+
+      assert.equal(testSources.length, 3);
+    });
+
+    it('should exclude only test files but include a single special test', () => {
+      const testSources = [];
+
+      filenames.forEach((filename) => {
+        if (filenameInclude(filename, './contracts/tests/**')) {
+          testSources.push(filename);
+        }
+      });
+
+      assert.equal(testSources.length, 4);
+    });
+
+    it('should exclude only tests in specific folder', () => {
+      const testSources = [];
+
+      filenames.forEach((filename) => {
+        if (filenameInclude(filename, '**/test.**', '**/test.AnotherThing**')) {
+          testSources.push(filename);
+        }
+      });
+
+      assert.equal(testSources.length, 4);
     });
   });
 });
