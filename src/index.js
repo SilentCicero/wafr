@@ -195,7 +195,9 @@ function runTestMethodsSeq(currentIndex, testMethods, contractObject, nextContra
       // has method error
       if (methodError) {
         if (String(methodName.toLowerCase()).includes('throw')
-        && JSON.stringify(methodError.message).includes('JUMP')) {
+        && (JSON.stringify(methodError.message).toLowerCase().includes('jump')
+        || JSON.stringify(methodError.message).toLowerCase().includes('vm exception')
+        || JSON.stringify(methodError.message).toLowerCase().includes('out of gas'))) {
           setupCompleteMethod();
         } else {
           throwError(`error while testing method '${methodName}': ${methodError}`);

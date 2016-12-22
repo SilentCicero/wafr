@@ -258,7 +258,15 @@ function errorEnhancement(inputMessage) {
 
   // if message includes
   if (message.includes('invalid JUMP')) {
-    outputMessage = 'This can be caused by many things. One main cause is a `throw` flag being used somewhere in execution.';
+    outputMessage = `This can be caused by many things. One main cause is a 'throw' flag being used somewhere in execution.
+
+    This can be caused by:
+
+    1. A 'throw' flag being used somewhere in execution (a function your calling)
+    2. Sending ether to a contract which does not have the 'payable' modifier on the fallback:
+        function () payable {}
+    3. A send or transaction was out of gas
+    `;
   }
 
   // if message includes
@@ -275,6 +283,7 @@ function errorEnhancement(inputMessage) {
     3. An error caused by the wafr module
     4. An error with the node simulation module (npm: 'ethereumjs-testrpc')
     5. A wafr account actually being out of gas
+    6. The 'payable' flag not being used on a contract your sending ether too (common)
 
     If you cannot resolve this issue with reasonable investigation,
     report the error at:
