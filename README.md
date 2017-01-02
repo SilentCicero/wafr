@@ -51,7 +51,7 @@ npm install -g wafr
 ## Usage
 
 ```
-wafr ./contracts
+wafr ./contracts --output ./contracts.json
 ```
 
 ```

@@ -1,3 +1,12 @@
+# 0.3.4 -- added more gas/ether value
+
+1. added higher gas limit, gas amount
+2. higher contract amount sent to Test contracts
+
+# 0.3.2 -- added support for out of gas and vm exception throws
+
+1. Added support for out of gas and vm exception throws, while testing `Throw` methods
+
 # 0.3.1 -- extended exclude and include features
 
 1. extended globing for exlude and include `--extended {this, or that}`

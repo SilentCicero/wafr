@@ -24,17 +24,21 @@ const getBlockIncreaseFromName = utils.getBlockIncreaseFromName;
 const sortABIByMethodName = utils.sortABIByMethodName;
 const bytes32ToType = utils.bytes32ToType; // eslint-disable-line
 const report = utils.report;
+const accountsObject = [];
+for(var i = 0; i < 1000; i++) { // eslint-disable-line
+  accountsObject[i] = { index: i, balance: '0x6d79f82328ea3da61e066ebb2eaa9494c589c000' };
+}
 const provider = TestRPC.provider({
-  gasLimit: 99999999999999999999,
+  gasLimit: '99999999999999999999999999999', // '99999999999999999999'
   gasPrice: '1',
   verbose: false,
   logger: { log: () => {} },
   debug: false,
+  accounts: accountsObject,
 });
-
 const accounts = Object.keys(provider.manager.state.accounts);
 const web3 = new Web3(provider);
-const txObject = { from: accounts[0], gas: '99999999999999999' };
+const txObject = { from: accounts[0], gas: '99999999999999999999999999999' };
 
 // test each method sequentially...
 // 1.. then 2... then 3... and so on
@@ -376,7 +380,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
   const contractABI = JSON.parse(testContracts[contractIndex].interface);
   const contractObject = web3.eth.contract(contractABI);
   const contractBytecode = testContracts[contractIndex].bytecode;
-  const contractBalance = 50000000000;
+  const contractBalance = '0xc9f2c9cd04674edea40000';
   const contractTxObject = Object.assign({ data: contractBytecode },
     Object.assign({}, txObject));
 
@@ -422,7 +426,7 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
           const testMethods = sortABIByMethodName(getTestMethodsFromABI(contractABI));
           const startIndex = 0;
           const initialTxObject = Object.assign({}, txObject);
-          initialTxObject.from = accounts[1];
+          initialTxObject.from = accounts[nextIndex + 1];
           initialTxObject.value = contractBalance;
           initialTxObject.to = contractResultObject.address;
           const setupTxObject = Object.assign({}, txObject);
