@@ -417,6 +417,7 @@ For example:
 10. When using `assertEq`, dont use literal numbers, wrap them in `uint` or `int` (i.e. not `assertEq(1, 2);` but `assertEq(uint(1), uint(2));`)
 11. Wafr does not allow `../` in your `import` paths, it is only from the specified path up
 12. test methods are ordered by name or number, not how they are written in the contract
+13. Always use single qoutes around `include` and `exclude` settings. i.e `wafr ./contracts --include '**SimpleStore.sol'`
 
 ## Other Awesome Frameworks
 

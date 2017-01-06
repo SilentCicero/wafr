@@ -167,6 +167,8 @@ function getInputSources(dirname, exclude, include, callback) {
           sources[parsedFileName] = content;
         }
 
+        console.log(filename);
+
         // increase files readFiles
         filesRead += 1;
 
