@@ -1,6 +1,8 @@
 const dir = require('node-dir');
 const ethUtil = require('ethereumjs-util');
 const globToRegExp = require('glob-to-regexp');
+const execall = require('execall');
+const strip = require('strip-comment');
 
 // function to handle throwing an errorin sol-test
 function throwError(error) {
@@ -132,8 +134,59 @@ function filenameInclude(filename, exclude, include) { // eslint-disable-line
   return output;
 }
 
+// get all import paths from contract source
+function allImportPaths(contractSource) {
+  const noCommentSource = strip.js(String(contractSource));
+  const rawImportStatements = execall(/^(\s*)((import)(.*?))("|')(.*?)("|')((;)|((.*?)(;)))$/gm, noCommentSource);
+  const importPaths = rawImportStatements
+    .map(v => String(execall(/("|')(.*?)("|')/g, v.match)[0].match)
+        .replace(/'/g, '')
+        .replace(/"/g, '')
+        .replace(/^\//, '')
+        .replace('./', '')
+        .trim());
+
+  return importPaths.filter(path => (path !== 'wafr/Test.sol'));
+}
+
+// build dependency tree, returns a complex object
+function buildDependencyTreeFromSources(filenames, sourcesObject) {
+  const orgnizedFlat = {};
+
+  // build tree object
+  filenames.forEach(sourceFileName => {
+    orgnizedFlat[sourceFileName] = {
+      path: sourceFileName,
+      source: sourcesObject[sourceFileName],
+      dependencies: buildDependencyTreeFromSources(allImportPaths(sourcesObject[sourceFileName]), sourcesObject),
+    };
+  });
+
+  // return organized object
+  return orgnizedFlat;
+}
+
+// return flat source object from a specific tree root
+function buildFlatSourcesObjectFromTreeObject(treeObject) {
+  const currentOutputObject = Object.assign({});
+  currentOutputObject[treeObject.path] = treeObject.source;
+
+  Object.keys(treeObject.dependencies).forEach(dependantTreeObjectFileName => {
+    Object.assign(currentOutputObject, buildFlatSourcesObjectFromTreeObject(treeObject.dependencies[dependantTreeObjectFileName]));
+  });
+
+  return currentOutputObject;
+}
+
+// returns a source list object of all dependancies
+function buildDependantsSourceTree(sourceFileName, sourcesObject) {
+  const depsTree = buildDependencyTreeFromSources(Object.keys(sourcesObject), sourcesObject);
+
+  return buildFlatSourcesObjectFromTreeObject(depsTree[sourceFileName]);
+}
+
 // get all contract input sources
-function getInputSources(dirname, exclude, include, callback) {
+function getInputSources(dirname, exclude, include, focusContractPath, callback) {
   let filesRead = 0;
   const sources = {};
 
@@ -167,14 +220,17 @@ function getInputSources(dirname, exclude, include, callback) {
           sources[parsedFileName] = content;
         }
 
-        console.log(filename);
-
         // increase files readFiles
         filesRead += 1;
 
         // process next file
         if (filesRead === files.length) {
-          callback(null, sources);
+          // filter sources by focus dependencies
+          if (focusContractPath) {
+            callback(null, buildDependantsSourceTree(focusContractPath, sources));
+          } else {
+            callback(null, sources);
+          }
         } else {
           next();
         }

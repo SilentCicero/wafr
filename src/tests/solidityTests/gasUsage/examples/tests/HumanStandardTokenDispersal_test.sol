@@ -4,6 +4,8 @@ import "wafr/Test.sol";
 import "examples/HumanStandardToken.sol";
 import "examples/HumanStandardTokenDispersal.sol";
 
+contract Dummy {}
+
 contract HumanStandardTokenDispersalTest is Test {
   uint[] amounts;
   address[] accounts;
@@ -13,9 +15,9 @@ contract HumanStandardTokenDispersalTest is Test {
     amounts.push(uint(6));
     amounts.push(uint(6));
     amounts.push(uint(3));
-    accounts.push(0x62E2F894964197A2458D8E8276e43450E9f5b885);
-    accounts.push(0x4464eD250Ea774146A0fBbC1da0Ffa6a81514cA7);
-    accounts.push(0x50B8B06AB0cbfb26EA867E9F5175593883e481eD);
+    accounts.push(address(new Dummy()));
+    accounts.push(address(new Dummy()));
+    accounts.push(address(new Dummy()));
     address tokenAddr = dispersal.createHumanStandardToken(
         accounts,
         amounts,
@@ -24,8 +26,8 @@ contract HumanStandardTokenDispersalTest is Test {
         "CNT");
     assertTrue(bool(tokenAddr != address(0)));
     HumanStandardToken token = HumanStandardToken(tokenAddr);
-    assertEq(token.balanceOf(0x62E2F894964197A2458D8E8276e43450E9f5b885), 6);
-    assertEq(token.balanceOf(0x4464eD250Ea774146A0fBbC1da0Ffa6a81514cA7), 6);
-    assertEq(token.balanceOf(0x50B8B06AB0cbfb26EA867E9F5175593883e481eD), 3);
+    assertEq(token.balanceOf(accounts[0]), 6);
+    assertEq(token.balanceOf(accounts[1]), 6);
+    assertEq(token.balanceOf(accounts[2]), 3);
   }
 }

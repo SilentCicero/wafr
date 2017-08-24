@@ -496,12 +496,43 @@ function testContractsSeq(contractIndex, testContracts, contractComplete) {
   }
 }
 
+function trimPath(name) {
+  return name.split(':')[1];
+}
+
+function contractNameProcessing(onlyContractName, solcContracts) {
+  const outputContracts = Object.assign({});
+
+  Object.keys(solcContracts).forEach(contractName => {
+    const processedName = onlyContractName ? trimPath(contractName) : contractName;
+
+    outputContracts[processedName] = solcContracts[contractName];
+  });
+
+  return outputContracts;
+}
+
+// detect error type from error messages
+function errortype(message) {
+  return (String(message).match(/^(.*:[0-9]*:[0-9]* )?Warning: /) ? 'warning' : 'error');
+}
+
+// remove warnings from errors
+function filterErrorWarnings(errors) {
+  return (errors || []).filter(error => errortype(error) === 'error');
+}
+
+function filterErrorErrors(errors) {
+  return (errors || []).filter(error => errortype(error) === 'warning');
+}
+
 // run the main solTest export
 function wafr(options, callback) {
   const contractsPath = options.path;
   const optimizeCompiler = options.optimize;
   const sourcesExclude = options.exclude;
   const sourcesInclude = options.include;
+  const focusContract = options.focus;
   const reportLogs = {
     contracts: {},
     status: 'success',
@@ -511,7 +542,7 @@ function wafr(options, callback) {
   };
 
   // get allinput sources
-  getInputSources(contractsPath, sourcesExclude, sourcesInclude, (inputError, sources) => {
+  getInputSources(contractsPath, sourcesExclude, sourcesInclude, focusContract, (inputError, sources) => {
     if (inputError) {
       throwError(`while getting input sources: ${inputError}`);
     }
@@ -527,8 +558,13 @@ function wafr(options, callback) {
     // compile solc output (sync method)
     const output = solc.compile(compilerInput, optimizeCompiler);
 
+    // output compiler warnings
+    filterErrorErrors(output.errors).forEach((outputError) => {
+      log(`while compiling contracts in path warning.. ${contractsPath}: ${outputError}`);
+    });
+
     // handle all compiling errors
-    if (output.errors) {
+    if (filterErrorWarnings(output.errors).length > 0) {
       output.errors.forEach((outputError) => {
         throwError(`while compiling contracts in path ${contractsPath}: ${outputError}`);
       });
@@ -536,11 +572,13 @@ function wafr(options, callback) {
       // compiling contracts
       log('contracts compiled!');
 
+      const outputContracts = contractNameProcessing(options.onlyContractName, output.contracts);
+
       // add output to report
-      reportLogs.contracts = output.contracts;
+      reportLogs.contracts = outputContracts;
 
       // find and build test contracts array
-      const testContracts = buildTestContractsArray(output.contracts);
+      const testContracts = buildTestContractsArray(outputContracts);
       const startIndex = 0;
 
       // done function

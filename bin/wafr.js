@@ -12,13 +12,15 @@ const cli = meow(`
       $ wafr <path to contracts>
 
     Options
-      --help           the help CLI
-      --optimize -op   turn solc optimizer on or off
-      --exclude  -e    exclude specific files from compiling (REGEX e.g. 'test.something.**.sol')
-      --include  -i    negates files excluded (REGEX e.g. 'test.Balanace**')
-      --stats,   -s    output the stats report to a JSON file
-      --output,  -o    solc compile output to a JSON file
-      --version, -v    the package verson number
+      --help              the help CLI
+      --optimize -op      turn solidity optimizer on or off
+      --exclude  -e       exclude specific files from compiling (Glob REGEX e.g. 'test.something.**.sol')
+      --include  -i       negates files excluded (Glob REGEX e.g. 'test.Balanace**')
+      --stats,   -s       output the stats report to a JSON file
+      --output,  -o       solc compile output to a JSON file
+      --onlyContractName  include only the contract name in your build (like pre solc 11 naming)
+      --version, -v       the package verson number
+      --focus,   -f       focus only on a single contract and its dependants for compiling and testing
 
     Example
       $ wafr ./contracts --output ./build/contracts.json
@@ -29,12 +31,15 @@ const cli = meow(`
     i: 'incude',
     e: 'exclude',
     op: 'optimize',
+    f: 'focus',
   },
 });
 
 // flag handling
 const outputPath = cli.flags.output;
+const onlyContractName = cli.flags.onlyContractName || false;
 const statsPath = cli.flags.stats;
+const focusContract = cli.flags.focus || false;
 const solcInclude = cli.flags.include || null;
 const solcExclude = cli.flags.exclude || null;
 const solcOptimize = parseInt((cli.flags.optimize || 1), 10);
@@ -87,6 +92,8 @@ wafr({
   optimize: solcOptimize,
   exclude: solcExclude,
   include: solcInclude,
+  focus: focusContract,
+  onlyContractName,
 }, (wafrError, wafrResult) => {
   if (wafrError) {
     throw new Error(`error while running wafr CLI: ${wafrError}`);

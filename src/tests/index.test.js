@@ -9,7 +9,7 @@ const exec = require('child_process').exec;
 describe('run test ', () => {
   describe('assertTrue', () => {
     it('test exclude on the CLI with include option', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --exclude **Another**.sol --include **test.AnotherSomething**  --output ./src/tests/testBuild/excludeContracts.json', (execError) => { // eslint-disable-line
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --onlyContractName=1 --exclude **Another**.sol --include **test.AnotherSomething**  --output ./src/tests/testBuild/excludeContracts.json', (execError) => { // eslint-disable-line
         const contractsOutput = require('./testBuild/excludeContracts.json'); // eslint-disable-line
         assert.equal(Object.keys(contractsOutput).length, 1); // including Test contract
         assert.deepEqual(Object.keys(contractsOutput), ['Something']);
@@ -19,12 +19,12 @@ describe('run test ', () => {
     });
 
     it('test exclude on the CLI', (done) => {
-      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --exclude **test.**.sol --output ./src/tests/testBuild/excludeContracts2.json', (execError) => { // eslint-disable-line
+      exec('node ./bin/wafr.js ./src/tests/solidityTests/excludeTest --onlyContractName=1 --exclude **test.**.sol --output ./src/tests/testBuild/excludeContracts2.json', (execError) => { // eslint-disable-line
         const contractsOutput = require('./testBuild/excludeContracts2.json'); // eslint-disable-line
 
         assert.equal(execError, null);
         assert.equal(Object.keys(contractsOutput).length, 2); // including Test contract
-        assert.deepEqual(Object.keys(contractsOutput), ['Another', 'Something']); // including Test contract
+        assert.deepEqual(Object.keys(contractsOutput), ['Something', 'Another']); // including Test contract
 
         done();
       });
@@ -34,12 +34,13 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/excludeTest',
+        onlyContractName: 1,
         optimize: 1,
         exclude: '**test.**.sol',
       }, (err, res) => {
         assert.equal(err, null);
         assert.equal(Object.keys(res.contracts).length, 3); // including Test contract
-        assert.deepEqual(Object.keys(res.contracts), ['Another', 'Something', 'Test']); // including Test contract
+        assert.deepEqual(Object.keys(res.contracts), ['Something', 'Another', 'Test']); // including Test contract
         done();
       });
     });
@@ -49,6 +50,7 @@ describe('run test ', () => {
       wafr({
         path: './src/tests/solidityTests/excludeTest',
         optimize: 1,
+        onlyContractName: 1,
         exclude: '**test.**.sol',
         include: '**test.Another.**',
       }, (err, res) => {
@@ -62,7 +64,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/onlyContractsNoTests',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (err, res) => {
         assert.equal(err, null);
         assert.equal(Object.keys(res.contracts).length, 4);
@@ -75,7 +77,7 @@ describe('run test ', () => {
       wafr({
         path: './src/tests/solidityTests/assertTrue',
         root: './',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (err, res) => {
         assert.equal(err, null);
         assert.equal(typeof res, 'object');
@@ -147,7 +149,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/beforeAfterEach',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -166,12 +168,11 @@ describe('run test ', () => {
       wafr({
         path: './src/tests/solidityTests/testThrow',
         root: './',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (err, res) => {
         assert.equal(err, null);
         assert.equal(typeof res, 'object');
         assert.equal(res.logs.BasicThrowTest.name, 'BasicThrowTest');
-        assert.equal(res.logs.BasicThrowTest.index, 0);
         assert.equal(typeof res.logs.BasicThrowTest.logs.test_basicThrow, 'object');
         assert.equal(typeof res.logs.BasicThrowTest.logs.test_basicWithAssertBeforeThrow, 'object');
         assert.equal(res.logs.BasicThrowTest.logs.test_basicThrow.status, 'success');
@@ -256,7 +257,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/campaign',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -268,7 +269,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/dirDepth',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -280,7 +281,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/methodOrdering',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -300,7 +301,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/assertFalse',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -312,7 +313,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/assertEq',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -347,7 +348,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/emptyTestContract',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -361,7 +362,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/increaseBlockBy',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -379,7 +380,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/increaseTimeBy',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -397,7 +398,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/noTestDir',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -410,7 +411,7 @@ describe('run test ', () => {
       // run solTest
       wafr({
         path: './src/tests/solidityTests/faucet',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -433,7 +434,7 @@ describe('run test ', () => {
       wafr({
         path: './src/tests/solidityTests/boardroom',
         root: './',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (wafrError, res) => {
         assert.equal(wafrError, null);
         assert.equal(typeof res, 'object');
@@ -449,7 +450,7 @@ describe('run test ', () => {
       wafr({
         path: './src/tests/solidityTests/setupMethod',
         root: './',
-        optimize: 1,
+        optimize: 1, onlyContractName: 1,
       }, (err, res) => {
         assert.equal(err, null);
         assert.equal(typeof res, 'object');
